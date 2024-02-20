@@ -68,8 +68,8 @@ class GameViewController: UIViewController {
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
         flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
-        flashlightButton.frame = CGRect(x: 100, y: 100, width: 200, height: 50)
-        scnView.addSubview(flashlightButton)
+        flashlightButton.frame = CGRect(x: 100, y: 500, width: 200, height: 100)
+        self.view.addSubview(flashlightButton)
         
         addCube()
         reanimate()
@@ -82,9 +82,11 @@ class GameViewController: UIViewController {
         let flashlight = scene.rootNode.childNode(withName: "Flash Light", recursively: true)
         if (flashlightOn){
             flashlight?.light?.intensity = 0
+            flashlightOn = false
         }
         else{
             flashlight?.light?.intensity = 2000
+            flashlightOn = true
         }
     }
     
