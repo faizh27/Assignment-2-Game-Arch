@@ -60,12 +60,16 @@ class GameViewController: UIViewController {
         return mazeNode
     }
     
+    var rotAngle = CGSize.zero // Keep track of drag gesture numbers
+    var rot = CGSize.zero // Keep track of rotation angle
+    var isRotating = true // Keep track of if rotation is toggled
+    var cameraNode = SCNNode() // Initialize camera node
+    // create a new scene
+    let scene = SCNScene(named: "art.scnassets/main.scn")!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
-        // create a new scene
-        let scene = SCNScene(named: "art.scnassets/main.scn")!
         
         // create and add a camera to the scene
         let cameraNode = SCNNode()
@@ -88,7 +92,7 @@ class GameViewController: UIViewController {
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = UIColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
-        
+
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView
@@ -115,6 +119,9 @@ class GameViewController: UIViewController {
 
         // Add the maze node to the scene
         scene.rootNode.addChildNode(mazeNode)
+        
+        addCube()
+        reanimate()
     }
     
     @objc
@@ -150,6 +157,42 @@ class GameViewController: UIViewController {
             material.emission.contents = UIColor.red
             
             SCNTransaction.commit()
+        }
+    }
+    
+    // Create Cube
+    func addCube() {
+        let theCube = SCNNode(geometry: SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
+        theCube.name = "The Cube" // Name the node so we can reference it later
+        theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "crate.jpg") // Diffuse the crate image material across the whole cube
+        theCube.position = SCNVector3(0, 0, 0) // Put the cube at position (0, 0, 0)
+        scene.rootNode.addChildNode(theCube) // Add the cube node to the scene
+    }
+    
+    @MainActor
+    func reanimate() {
+        let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 45 comes in)
+        if (isRotating) {
+            rot.width += 0.05 // Increment rotation of the cube by 0.0005 radians
+            if (rot.width >= 2*Double.pi*50) {
+                rot.width = 0.0
+            }
+        } else {
+            rot = rotAngle // Let the rot variable follow the drag gesture
+            if (rot.width >= 2*Double.pi*50) {
+                rot.width = 0.0
+            }
+            if (rot.height >= 2*Double.pi*50) {
+                rot.height = 0.0
+            }
+        }
+        var rotX = Double(rot.height / 50)
+        var rotY = Double(rot.width / 50)
+        theCube?.eulerAngles = SCNVector3(rotX, rotY, 0) // Set the cube rotation to the numbers given from the drag gesture
+        
+        // Repeat increment of rotation every 10000 nanoseconds
+        Task { try! await Task.sleep(nanoseconds: 10000)
+            reanimate()
         }
     }
     
