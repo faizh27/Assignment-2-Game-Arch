@@ -15,6 +15,8 @@ class GameViewController: UIViewController {
     var rot = CGSize.zero // Keep track of rotation angle
     var isRotating = true // Keep track of if rotation is toggled
     var cameraNode = SCNNode() // Initialize camera node
+    var diffuseLightPos = SCNVector4(0, 0, 0, Double.pi/2) // Keep track of flashlight position
+    var flashlightOn = true
     // create a new scene
     let scene = SCNScene(named: "art.scnassets/main.scn")!
 
@@ -63,8 +65,27 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
+        let flashlightButton = UIButton(type: .system)
+        flashlightButton.setTitle("Flashlight", for: .normal)
+        flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
+        flashlightButton.frame = CGRect(x: 100, y: 100, width: 200, height: 50)
+        scnView.addSubview(flashlightButton)
+        
         addCube()
         reanimate()
+        setupFlashLight()
+    }
+    
+    @objc
+    func flashlightToggle()
+    {
+        let flashlight = scene.rootNode.childNode(withName: "Flash Light", recursively: true)
+        if (flashlightOn){
+            flashlight?.light?.intensity = 0
+        }
+        else{
+            flashlight?.light?.intensity = 2000
+        }
     }
     
     @objc
@@ -138,6 +159,19 @@ class GameViewController: UIViewController {
             reanimate()
         }
     }
+    
+    // Sets up a directional light (flashlight)
+    func setupFlashLight() {
+        let flashlight = SCNNode() // Create a SCNNode for the lamp
+        flashlight.name = "Flash Light" // Name the node so we can reference it later
+        flashlight.light = SCNLight() // Add a new light to the lamp
+        flashlight.light!.type = .directional // Set the light type to directional
+        flashlight.light!.color = UIColor.orange // Set the light color to orange
+        flashlight.light!.intensity = 2000 // Set the light intensity to 2000 lumins (1000 is default)
+        flashlight.rotation = diffuseLightPos // Set the rotation of the light from the flashlight to the flashlight position variable
+        scene.rootNode.addChildNode(flashlight) // Add the lamp node to the scene
+    }
+    
     
     override var prefersStatusBarHidden: Bool {
         return true
