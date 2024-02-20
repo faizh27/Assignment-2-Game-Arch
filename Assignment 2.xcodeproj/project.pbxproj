@@ -16,6 +16,8 @@
 		0CF5B33D2B8183AE003489DC /* Assignment_2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B33C2B8183AE003489DC /* Assignment_2Tests.swift */; };
 		0CF5B3472B8183AE003489DC /* Assignment_2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3462B8183AE003489DC /* Assignment_2UITests.swift */; };
 		0CF5B3492B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3482B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift */; };
+		0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3562B8183E2003489DC /* DisjointSet.cpp */; };
+		0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3592B8183E2003489DC /* maze.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,11 @@
 		0CF5B3422B8183AE003489DC /* Assignment 2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Assignment 2UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CF5B3462B8183AE003489DC /* Assignment_2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment_2UITests.swift; sourceTree = "<group>"; };
 		0CF5B3482B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment_2UITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0CF5B3552B8183E1003489DC /* Assignment 2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Assignment 2-Bridging-Header.h"; sourceTree = "<group>"; };
+		0CF5B3562B8183E2003489DC /* DisjointSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DisjointSet.cpp; sourceTree = "<group>"; };
+		0CF5B3572B8183E2003489DC /* maze.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = maze.h; sourceTree = "<group>"; };
+		0CF5B3582B8183E2003489DC /* DisjointSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisjointSet.h; sourceTree = "<group>"; };
+		0CF5B3592B8183E2003489DC /* maze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = maze.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +111,11 @@
 				0CF5B32C2B8183AC003489DC /* Main.storyboard */,
 				0CF5B32F2B8183AE003489DC /* Assets.xcassets */,
 				0CF5B3312B8183AE003489DC /* LaunchScreen.storyboard */,
+				0CF5B3562B8183E2003489DC /* DisjointSet.cpp */,
+				0CF5B3582B8183E2003489DC /* DisjointSet.h */,
+				0CF5B3592B8183E2003489DC /* maze.cpp */,
+				0CF5B3572B8183E2003489DC /* maze.h */,
+				0CF5B3552B8183E1003489DC /* Assignment 2-Bridging-Header.h */,
 			);
 			path = "Assignment 2";
 			sourceTree = "<group>";
@@ -193,6 +205,7 @@
 				TargetAttributes = {
 					0CF5B3222B8183AC003489DC = {
 						CreatedOnToolsVersion = 15.2;
+						LastSwiftMigration = 1520;
 					};
 					0CF5B3372B8183AE003489DC = {
 						CreatedOnToolsVersion = 15.2;
@@ -257,7 +270,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */,
 				0CF5B32B2B8183AC003489DC /* GameViewController.swift in Sources */,
+				0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */,
 				0CF5B3272B8183AC003489DC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -436,8 +451,10 @@
 		0CF5B34D2B8183AE003489DC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -455,16 +472,22 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "bcit.Assignment-2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Assignment 2/Assignment 2-Bridging-Header.h";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/$(PROJECT_NAME)";
 			};
 			name = Debug;
 		};
 		0CF5B34E2B8183AE003489DC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -482,8 +505,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "bcit.Assignment-2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Assignment 2/Assignment 2-Bridging-Header.h";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/$(PROJECT_NAME)";
 			};
 			name = Release;
 		};
