@@ -18,6 +18,7 @@
 		0CF5B3492B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3482B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift */; };
 		0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3562B8183E2003489DC /* DisjointSet.cpp */; };
 		0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3592B8183E2003489DC /* maze.cpp */; };
+		4E224E102B8559B100D2C342 /* crate.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E224E0F2B8559B100D2C342 /* crate.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		0CF5B3572B8183E2003489DC /* maze.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = maze.h; sourceTree = "<group>"; };
 		0CF5B3582B8183E2003489DC /* DisjointSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisjointSet.h; sourceTree = "<group>"; };
 		0CF5B3592B8183E2003489DC /* maze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = maze.cpp; sourceTree = "<group>"; };
+		4E224E0F2B8559B100D2C342 /* crate.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = crate.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				0CF5B3592B8183E2003489DC /* maze.cpp */,
 				0CF5B3572B8183E2003489DC /* maze.h */,
 				0CF5B3552B8183E1003489DC /* Assignment 2-Bridging-Header.h */,
+				4E224E0F2B8559B100D2C342 /* crate.jpg */,
 			);
 			path = "Assignment 2";
 			sourceTree = "<group>";
@@ -245,6 +248,7 @@
 				0CF5B3292B8183AC003489DC /* art.scnassets in Resources */,
 				0CF5B3332B8183AE003489DC /* LaunchScreen.storyboard in Resources */,
 				0CF5B3302B8183AE003489DC /* Assets.xcassets in Resources */,
+				4E224E102B8559B100D2C342 /* crate.jpg in Resources */,
 				0CF5B32E2B8183AC003489DC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
