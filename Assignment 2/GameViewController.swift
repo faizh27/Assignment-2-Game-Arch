@@ -17,6 +17,7 @@ class GameViewController: UIViewController {
     var cameraNode = SCNNode() // Initialize camera node
     var diffuseLightPos = SCNVector4(0, 0, 0, Double.pi/2) // Keep track of flashlight position
     var flashlightOn = true
+    var dayTime = true
     // create a new scene
     let scene = SCNScene(named: "art.scnassets/main.scn")!
 
@@ -68,12 +69,19 @@ class GameViewController: UIViewController {
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
         flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
-        flashlightButton.frame = CGRect(x: 100, y: 500, width: 200, height: 100)
+        flashlightButton.frame = CGRect(x: 0, y: 700, width: 200, height: 100)
         self.view.addSubview(flashlightButton)
+        
+        let dayTimeToggleButton = UIButton(type: .system)
+        dayTimeToggleButton.setTitle("Day/Night", for: .normal)
+        dayTimeToggleButton.addTarget(self, action: #selector(dayNightToggle), for: .touchUpInside)
+        dayTimeToggleButton.frame = CGRect(x: 100, y: 700, width: 200, height: 100)
+        self.view.addSubview(dayTimeToggleButton)
         
         addCube()
         reanimate()
         setupFlashLight()
+        setupAmbientLight()
     }
     
     @objc
@@ -87,6 +95,20 @@ class GameViewController: UIViewController {
         else{
             flashlight?.light?.intensity = 2000
             flashlightOn = true
+        }
+    }
+    
+    @objc
+    func dayNightToggle()
+    {
+        let ambientLight = scene.rootNode.childNode(withName: "Ambient Light", recursively: true)
+        if (!dayTime){
+            ambientLight?.light?.intensity = 2000
+            dayTime = true
+        }
+        else{
+            ambientLight?.light?.intensity = 100
+            dayTime = false
         }
     }
     
@@ -172,6 +194,17 @@ class GameViewController: UIViewController {
         flashlight.light!.intensity = 2000 // Set the light intensity to 2000 lumins (1000 is default)
         flashlight.rotation = diffuseLightPos // Set the rotation of the light from the flashlight to the flashlight position variable
         scene.rootNode.addChildNode(flashlight) // Add the lamp node to the scene
+    }
+    
+    // Sets up an ambient light (all around)
+    func setupAmbientLight() {
+        let ambientLight = SCNNode() // Create a SCNNode for the lamp
+        ambientLight.name = "Ambient Light"
+        ambientLight.light = SCNLight() // Add a new light to the lamp
+        ambientLight.light!.type = .ambient // Set the light type to ambient
+        ambientLight.light!.color = UIColor.white // Set the light color to white
+        ambientLight.light!.intensity = 2000 // Set the light intensity to 5000 lumins (1000 is default)
+        scene.rootNode.addChildNode(ambientLight) // Add the lamp node to the scene
     }
     
     
