@@ -10,67 +10,75 @@ import QuartzCore
 import SceneKit
 
 class GameViewController: UIViewController {
+
+    let scene = SCNScene(named: "art.scnassets/maze.scn")!
+    let isRotating = true
+    var rotAngle = 0.0
+    
+    override func viewDidLoad() {
+
+        super.viewDidLoad()
         
-    func createMazeNode() -> SCNNode {
-        let mazeNode = SCNNode()
-        
+        var cellSize : CGFloat = 1
+        var wallThickness = 0.1
         var maze = Maze(5, 5)
         maze.Create()
+        print(maze.GetCell(0, 0))
         
-        // Define the size of a single cell, padding, and wall thickness
-        let cellSize: CGFloat = 1.0
-        let wallThickness: CGFloat = 0.1
-        
-        // Iterate through maze cells
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
                 let cell = maze.GetCell(row, col)
-                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), 0, CGFloat(row) * (cellSize))
+                var mazeCell = MazeCell(xPos: Float(-row), zPos: Float(col), northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
+                print("(\(mazeCell.zPos), \(mazeCell.xPos)) = \(cell)")
                 
-                // Create a node for the cell
-                let cellGeometry = SCNBox(width: cellSize, height: 0.0, length: cellSize, chamferRadius: 0)
-                let cellNode = SCNNode(geometry: cellGeometry)
-                cellNode.position = cellPosition
-                mazeNode.addChildNode(cellNode)
-                
-                // Check walls and create them if present
-                if cell.northWallPresent {
-                    let northWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-                    northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float((cellSize)/2))
-                    mazeNode.addChildNode(northWallNode)
-                }
-                if cell.southWallPresent {
-                    let southWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-                    southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float((cellSize))/2)
-                    mazeNode.addChildNode(southWallNode)
-                }
-                if cell.eastWallPresent {
-                    let eastWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-                    eastWallNode.position = SCNVector3(cellPosition.x + Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
-                    mazeNode.addChildNode(eastWallNode)
-                }
-                if cell.westWallPresent {
-                    let westWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-                    westWallNode.position = SCNVector3(cellPosition.x - Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
-                    mazeNode.addChildNode(westWallNode)
-                }
+                scene.rootNode.addChildNode(mazeCell)
             }
         }
         
-        return mazeNode
-    }
-    
-    var rotAngle = CGSize.zero // Keep track of drag gesture numbers
-    var rot = CGSize.zero // Keep track of rotation angle
-    var isRotating = true // Keep track of if rotation is toggled
-    var cameraNode = SCNNode() // Initialize camera node
-    // create a new scene
-    let scene = SCNScene(named: "art.scnassets/main.scn")!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
+        let mazeNode = SCNNode() // Create a new SCNNode instance
+        mazeNode.name = "Maze" // Set a name for the node if needed
+        scene.rootNode.addChildNode(mazeNode)
         
+        // Iterate through maze cells
+//        for row in 0..<maze.rows {
+//            for col in 0..<maze.cols {
+//                let cell = maze.GetCell(row, col)
+//                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), 0, CGFloat(row) * (cellSize))
+//
+//                // Create a node for the cell
+//                let cellGeometry = SCNBox(width: cellSize, height: 0.0, length: cellSize, chamferRadius: 0)
+//                let cellNode = SCNNode(geometry: cellGeometry)
+//                cellNode.position = cellPosition
+//                mazeNode.addChildNode(cellNode)
+//
+//                // Check walls and create them if present
+//                if cell.northWallPresent {
+//                    let northWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
+//                    northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float((cellSize)/2))
+//                    mazeNode.addChildNode(northWallNode)
+//                }
+//                if cell.southWallPresent {
+//                    let southWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
+//                    southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float((cellSize))/2)
+//                    mazeNode.addChildNode(southWallNode)
+//
+//                }
+//
+//                if cell.eastWallPresent {
+//
+//                    let eastWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
+//
+//                    eastWallNode.position = SCNVector3(cellPosition.x + Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
+//                    mazeNode.addChildNode(eastWallNode)
+//                }
+//
+//                if cell.westWallPresent {
+//                    let westWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
+//                    westWallNode.position = SCNVector3(cellPosition.x - Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
+//                    mazeNode.addChildNode(westWallNode)
+//                }
+//            }
+//        }
         // create and add a camera to the scene
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -92,7 +100,12 @@ class GameViewController: UIViewController {
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = UIColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
-
+        
+        // retrieve the ship node
+        //let ship = scene.rootNode.childNode(withName: "ship", recursively: true)!
+        
+        // animate the 3d object
+        //ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView
@@ -113,15 +126,43 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
-        
-        // Create the maze node
-        let mazeNode = createMazeNode()
-
-        // Add the maze node to the scene
-        scene.rootNode.addChildNode(mazeNode)
-        
         addCube()
-        reanimate()
+        Task(priority: .userInitiated) {
+            await firstUpdate()
+        }
+    }
+    
+    // Create Cube
+    func addCube() {
+        let theCube = SCNNode(geometry: SCNBox(width: 0.3, height: 0.3, length: 0.3, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
+        theCube.name = "The Cube" // Name the node so we can reference it later
+        theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "crate.jpg") // Diffuse the crate image material across the whole cube
+        theCube.position = SCNVector3(0, 0, 0) // Put the cube at position (0, 0, 0)
+        scene.rootNode.addChildNode(theCube) // Add the cube node to the scene
+    }
+    
+    @MainActor
+    func firstUpdate() {
+        reanimate() // Call reanimate on the first graphics update frame
+    }
+    
+    @MainActor
+    func reanimate() {
+        let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 69 comes in)
+        if (isRotating) {
+            rotAngle += 0.05 // Increment rotation of the cube by 0.0005 radians
+            // Keep the rotation angle in the range of 0 and pi
+            if rotAngle > Double.pi {
+                rotAngle -= Double.pi
+            }
+        }
+        theCube?.eulerAngles = SCNVector3(0, rotAngle, 0) // Rotate cube by the final amount
+        //let directionalLight = scene.rootNode.childNode(withName: "Directional Light", recursively: true) // Get the cube object by its name (See line 56)
+        //directionalLight?.rotation = diffuseLightPos
+        // Repeat increment of rotation every 10000 nanoseconds
+        Task { try! await Task.sleep(nanoseconds: 100000)
+            reanimate()
+        }
     }
     
     @objc
@@ -157,42 +198,6 @@ class GameViewController: UIViewController {
             material.emission.contents = UIColor.red
             
             SCNTransaction.commit()
-        }
-    }
-    
-    // Create Cube
-    func addCube() {
-        let theCube = SCNNode(geometry: SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
-        theCube.name = "The Cube" // Name the node so we can reference it later
-        theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "crate.jpg") // Diffuse the crate image material across the whole cube
-        theCube.position = SCNVector3(0, 0, 0) // Put the cube at position (0, 0, 0)
-        scene.rootNode.addChildNode(theCube) // Add the cube node to the scene
-    }
-    
-    @MainActor
-    func reanimate() {
-        let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 45 comes in)
-        if (isRotating) {
-            rot.width += 0.05 // Increment rotation of the cube by 0.0005 radians
-            if (rot.width >= 2*Double.pi*50) {
-                rot.width = 0.0
-            }
-        } else {
-            rot = rotAngle // Let the rot variable follow the drag gesture
-            if (rot.width >= 2*Double.pi*50) {
-                rot.width = 0.0
-            }
-            if (rot.height >= 2*Double.pi*50) {
-                rot.height = 0.0
-            }
-        }
-        var rotX = Double(rot.height / 50)
-        var rotY = Double(rot.width / 50)
-        theCube?.eulerAngles = SCNVector3(rotX, rotY, 0) // Set the cube rotation to the numbers given from the drag gesture
-        
-        // Repeat increment of rotation every 10000 nanoseconds
-        Task { try! await Task.sleep(nanoseconds: 10000)
-            reanimate()
         }
     }
     
