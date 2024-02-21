@@ -10,6 +10,55 @@ import QuartzCore
 import SceneKit
 
 class GameViewController: UIViewController {
+        
+    func createMazeNode() -> SCNNode {
+        let mazeNode = SCNNode()
+        
+        var maze = Maze(5, 5)
+        maze.Create()
+        
+        // Define the size of a single cell, padding, and wall thickness
+        let cellSize: CGFloat = 1.0
+        let wallThickness: CGFloat = 0.1
+        
+        // Iterate through maze cells
+        for row in 0..<maze.rows {
+            for col in 0..<maze.cols {
+                let cell = maze.GetCell(row, col)
+                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), 0, CGFloat(row) * (cellSize))
+                
+                // Create a node for the cell
+                let cellGeometry = SCNBox(width: cellSize, height: 0.0, length: cellSize, chamferRadius: 0)
+                let cellNode = SCNNode(geometry: cellGeometry)
+                cellNode.position = cellPosition
+                mazeNode.addChildNode(cellNode)
+                
+                // Check walls and create them if present
+                if cell.northWallPresent {
+                    let northWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
+                    northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float((cellSize)/2))
+                    mazeNode.addChildNode(northWallNode)
+                }
+                if cell.southWallPresent {
+                    let southWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
+                    southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float((cellSize))/2)
+                    mazeNode.addChildNode(southWallNode)
+                }
+                if cell.eastWallPresent {
+                    let eastWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
+                    eastWallNode.position = SCNVector3(cellPosition.x + Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
+                    mazeNode.addChildNode(eastWallNode)
+                }
+                if cell.westWallPresent {
+                    let westWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
+                    westWallNode.position = SCNVector3(cellPosition.x - Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
+                    mazeNode.addChildNode(westWallNode)
+                }
+            }
+        }
+        
+        return mazeNode
+    }
     
     var rotAngle = CGSize.zero // Keep track of drag gesture numbers
     var rot = CGSize.zero // Keep track of rotation angle
@@ -23,6 +72,7 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         
         // create and add a camera to the scene
         let cameraNode = SCNNode()
@@ -77,6 +127,12 @@ class GameViewController: UIViewController {
         dayTimeToggleButton.addTarget(self, action: #selector(dayNightToggle), for: .touchUpInside)
         dayTimeToggleButton.frame = CGRect(x: 100, y: 700, width: 200, height: 100)
         self.view.addSubview(dayTimeToggleButton)
+        
+        // Create the maze node
+        let mazeNode = createMazeNode()
+
+        // Add the maze node to the scene
+        scene.rootNode.addChildNode(mazeNode)
         
         addCube()
         reanimate()
