@@ -10,11 +10,96 @@ import QuartzCore
 import SceneKit
 
 class GameViewController: UIViewController {
+    
+    var rotAngle = CGSize.zero // Keep track of drag gesture numbers
+    var rot = CGSize.zero // Keep track of rotation angle
+    var cameraNode = SCNNode() // Initialize camera node
+    var flashlightOn = true
+    var dayTime = true
+    var flashLightIntensity = 500.0
+    var ambientLightIntensity = 500.0
+    // create a new scene
+    let scene = SCNScene(named: "art.scnassets/main.scn")!
+    let mazeSize = 10
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        cameraNode.camera = SCNCamera()
+        cameraNode.name = "camera"
         
+        let cameraRotation = SCNVector3(x: 0, y: 3.14159265, z: 0) // Adjust the rotation angles as needed
+        
+        cameraNode.eulerAngles = cameraRotation
+        scene.rootNode.addChildNode(cameraNode)
+        
+        // place the camera
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: -3)
+        
+        // create and add a light to the scene
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .omni
+        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
+        scene.rootNode.addChildNode(lightNode)
+
+
+        // retrieve the SCNView
+        let scnView = self.view as! SCNView
+        
+        // set the scene to the view
+        scnView.scene = scene
+        
+        // allows the user to manipulate the camera
+        scnView.allowsCameraControl = true
+        
+        // show statistics such as fps and timing information
+        scnView.showsStatistics = true
+        
+        // configure the view
+        scnView.backgroundColor = UIColor.black
+        
+        // add a tap gesture recognizer
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        scnView.addGestureRecognizer(tapGesture)
+        
+        let flashlightButton = UIButton(type: .system)
+        flashlightButton.setTitle("Flashlight", for: .normal)
+        flashlightButton.setTitleColor(.white, for: .normal) // Set text color to white
+        flashlightButton.layer.cornerRadius = 10 // Set corner radius to make edges rounded
+        flashlightButton.layer.borderWidth = 1 // Optionally, you can add a border width
+        flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
+        flashlightButton.frame = CGRect(x: 20, y: 700, width: 100, height: 30)
+        self.view.addSubview(flashlightButton)
+        
+        let dayTimeToggleButton = UIButton(type: .system)
+        dayTimeToggleButton.setTitle("Day/Night", for: .normal)
+        dayTimeToggleButton.setTitleColor(.white, for: .normal) // Set text color to white
+        dayTimeToggleButton.layer.cornerRadius = 10 // Set corner radius to make edges rounded
+        dayTimeToggleButton.layer.borderWidth = 1 // Optionally, you can add a border width
+        dayTimeToggleButton.addTarget(self, action: #selector(dayNightToggle), for: .touchUpInside)
+        dayTimeToggleButton.frame = CGRect(x: 130, y: 700, width: 100, height: 30)
+        self.view.addSubview(dayTimeToggleButton)
+        
+        flashlightButton.backgroundColor = UIColor.blue
+        dayTimeToggleButton.backgroundColor = UIColor.red
+        
+        // Create the maze node
+        let mazeNode = createMazeNode()
+
+        // Add the maze node to the scene
+        scene.rootNode.addChildNode(mazeNode)
+        
+        addCube()
+        reanimate()
+        setupFlashLight()
+        setupAmbientLight()
+    }
+    
     func createMazeNode() -> SCNNode {
         let mazeNode = SCNNode()
         
-        var maze = Maze(5, 5)
+        var maze = Maze(Int32(mazeSize), Int32(mazeSize))
         maze.Create()
         
         // Define the size of a single cell, padding, and wall thickness
@@ -25,7 +110,7 @@ class GameViewController: UIViewController {
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
                 let cell = maze.GetCell(row, col)
-                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), 0, CGFloat(row) * (cellSize))
+                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), -0.5, CGFloat(row) * (cellSize))
                 
                 // Create a node for the cell
                 let cellGeometry = SCNBox(width: cellSize, height: 0.0, length: cellSize, chamferRadius: 0)
@@ -60,86 +145,6 @@ class GameViewController: UIViewController {
         return mazeNode
     }
     
-    var rotAngle = CGSize.zero // Keep track of drag gesture numbers
-    var rot = CGSize.zero // Keep track of rotation angle
-    var isRotating = true // Keep track of if rotation is toggled
-    var cameraNode = SCNNode() // Initialize camera node
-    var diffuseLightPos = SCNVector4(0, 0, 0, Double.pi/2) // Keep track of flashlight position
-    var flashlightOn = true
-    var dayTime = true
-    // create a new scene
-    let scene = SCNScene(named: "art.scnassets/main.scn")!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        
-        // create and add a camera to the scene
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        scene.rootNode.addChildNode(cameraNode)
-        
-        // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
-        
-        // create and add a light to the scene
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-        scene.rootNode.addChildNode(lightNode)
-        
-        // create and add an ambient light to the scene
-        let ambientLightNode = SCNNode()
-        ambientLightNode.light = SCNLight()
-        ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.darkGray
-        scene.rootNode.addChildNode(ambientLightNode)
-
-        
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // set the scene to the view
-        scnView.scene = scene
-        
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
-        
-        // show statistics such as fps and timing information
-        scnView.showsStatistics = true
-        
-        // configure the view
-        scnView.backgroundColor = UIColor.black
-        
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
-        
-        let flashlightButton = UIButton(type: .system)
-        flashlightButton.setTitle("Flashlight", for: .normal)
-        flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
-        flashlightButton.frame = CGRect(x: 0, y: 700, width: 200, height: 100)
-        self.view.addSubview(flashlightButton)
-        
-        let dayTimeToggleButton = UIButton(type: .system)
-        dayTimeToggleButton.setTitle("Day/Night", for: .normal)
-        dayTimeToggleButton.addTarget(self, action: #selector(dayNightToggle), for: .touchUpInside)
-        dayTimeToggleButton.frame = CGRect(x: 100, y: 700, width: 200, height: 100)
-        self.view.addSubview(dayTimeToggleButton)
-        
-        // Create the maze node
-        let mazeNode = createMazeNode()
-
-        // Add the maze node to the scene
-        scene.rootNode.addChildNode(mazeNode)
-        
-        addCube()
-        reanimate()
-        setupFlashLight()
-        setupAmbientLight()
-    }
-    
     @objc
     func flashlightToggle()
     {
@@ -149,7 +154,7 @@ class GameViewController: UIViewController {
             flashlightOn = false
         }
         else{
-            flashlight?.light?.intensity = 2000
+            flashlight?.light?.intensity = flashLightIntensity
             flashlightOn = true
         }
     }
@@ -159,7 +164,7 @@ class GameViewController: UIViewController {
     {
         let ambientLight = scene.rootNode.childNode(withName: "Ambient Light", recursively: true)
         if (!dayTime){
-            ambientLight?.light?.intensity = 2000
+            ambientLight?.light?.intensity = ambientLightIntensity
             dayTime = true
         }
         else{
@@ -206,7 +211,7 @@ class GameViewController: UIViewController {
     
     // Create Cube
     func addCube() {
-        let theCube = SCNNode(geometry: SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
+        let theCube = SCNNode(geometry: SCNBox(width: 0.3, height: 0.3, length: 0.3, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
         theCube.name = "The Cube" // Name the node so we can reference it later
         theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "crate.jpg") // Diffuse the crate image material across the whole cube
         theCube.position = SCNVector3(0, 0, 0) // Put the cube at position (0, 0, 0)
@@ -215,24 +220,15 @@ class GameViewController: UIViewController {
     
     @MainActor
     func reanimate() {
-        let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 45 comes in)
-        if (isRotating) {
-            rot.width += 0.05 // Increment rotation of the cube by 0.0005 radians
-            if (rot.width >= 2*Double.pi*50) {
-                rot.width = 0.0
-            }
-        } else {
-            rot = rotAngle // Let the rot variable follow the drag gesture
-            if (rot.width >= 2*Double.pi*50) {
-                rot.width = 0.0
-            }
-            if (rot.height >= 2*Double.pi*50) {
-                rot.height = 0.0
-            }
+        let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name
+        rot.width += 0.05 // Increment rotation of the cube by 0.0005 radians
+        if (rot.width >= 2*Double.pi*50) 
+        {
+            rot.width = 0.0
         }
-        var rotX = Double(rot.height / 50)
-        var rotY = Double(rot.width / 50)
-        theCube?.eulerAngles = SCNVector3(rotX, rotY, 0) // Set the cube rotation to the numbers given from the drag gesture
+        let rotX = Double(rot.height / 50)
+        let rotY = Double(rot.width / 50)
+        theCube?.eulerAngles = SCNVector3(rotX, rotY, 0)
         
         // Repeat increment of rotation every 10000 nanoseconds
         Task { try! await Task.sleep(nanoseconds: 10000)
@@ -247,9 +243,8 @@ class GameViewController: UIViewController {
         flashlight.light = SCNLight() // Add a new light to the lamp
         flashlight.light!.type = .directional // Set the light type to directional
         flashlight.light!.color = UIColor.orange // Set the light color to orange
-        flashlight.light!.intensity = 2000 // Set the light intensity to 2000 lumins (1000 is default)
-        flashlight.rotation = diffuseLightPos // Set the rotation of the light from the flashlight to the flashlight position variable
-        scene.rootNode.addChildNode(flashlight) // Add the lamp node to the scene
+        flashlight.light!.intensity = flashLightIntensity // Set the light intensity to 2000 lumins (1000 is default)
+        cameraNode.addChildNode(flashlight) // Add the flashlight node to the scene as a child of the camera
     }
     
     // Sets up an ambient light (all around)
@@ -259,7 +254,7 @@ class GameViewController: UIViewController {
         ambientLight.light = SCNLight() // Add a new light to the lamp
         ambientLight.light!.type = .ambient // Set the light type to ambient
         ambientLight.light!.color = UIColor.white // Set the light color to white
-        ambientLight.light!.intensity = 2000 // Set the light intensity to 5000 lumins (1000 is default)
+        ambientLight.light!.intensity = ambientLightIntensity // Set the light intensity to 5000 lumins (1000 is default)
         scene.rootNode.addChildNode(ambientLight) // Add the lamp node to the scene
     }
     
