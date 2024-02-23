@@ -17,11 +17,25 @@ class GameViewController: UIViewController {
     var playerNode : SCNNode?
     var cameraNode : SCNNode?
     
+    var slider: UISlider!
+    
     override func viewDidLoad() {
         flashLightNode = scene.rootNode.childNode(withName: "flashLight", recursively: true)!
         super.viewDidLoad()
         
-        var maze = Maze(5, 5)
+        // Create a UISlider
+                slider = UISlider(frame: CGRect(x: 50, y: 50, width: 200, height: 20))
+
+                // Configure the slider properties
+                slider.minimumValue = 0
+                slider.maximumValue = 100
+                slider.value = 50
+                slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+
+                // Add the slider to the view
+                view.addSubview(slider)
+        
+        var maze = Maze(10, 10)
         maze.Create()
         print(maze.GetCell(0, 0))
         
@@ -38,6 +52,27 @@ class GameViewController: UIViewController {
         let mazeNode = SCNNode() // Create a new SCNNode instance
         mazeNode.name = "Maze" // Set a name for the node if needed
         scene.rootNode.addChildNode(mazeNode)
+        
+        let fogShader = """
+        #pragma arguments
+        float fogStartDistance;
+        float fogEndDistance;
+        float4 fogColor;
+
+        #pragma transparent
+        #pragma body
+        float depth = _surface.position.z / _surface.position.w;
+        float fogFactor = (depth - fogStartDistance) / (fogEndDistance - fogStartDistance);
+        fogFactor = clamp(fogFactor, 0.0, 1.0);
+        _surface.diffuse.rgb = mix(_surface.diffuse.rgb, fogColor.rgb, fogFactor);
+        """
+        
+        
+        scene.fogStartDistance = 0.0
+        scene.fogEndDistance = 2.0
+        scene.fogColor = UIColor.gray
+        scene.fogDensityExponent = 2.0
+        scene.rootNode.geometry?.shaderModifiers = [.surface: fogShader]
         
         cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)
         
@@ -83,28 +118,38 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        scnView.addGestureRecognizer(doubleTapGesture)
+        
         // Add swipe gesture recognizer for each direction
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeUpGesture.direction = .up
-        self.view.addGestureRecognizer(swipeUpGesture)
+        scnView.addGestureRecognizer(swipeUpGesture)
         
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeDownGesture.direction = .down
-        self.view.addGestureRecognizer(swipeDownGesture)
+        scnView.addGestureRecognizer(swipeDownGesture)
         
         let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeLeftGesture.direction = .left
-        self.view.addGestureRecognizer(swipeLeftGesture)
+        scnView.addGestureRecognizer(swipeLeftGesture)
         
         let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeRightGesture.direction = .right
-        self.view.addGestureRecognizer(swipeRightGesture)
+        scnView.addGestureRecognizer(swipeRightGesture)
         
         addCube()
         Task(priority: .userInitiated) {
             await firstUpdate()
         }
     }
+    
+    @objc func sliderValueChanged(_ sender: UISlider) {
+            // Handle slider value changes
+            let value = sender.value
+            print("Slider value changed to: \(value)")
+        }
     
     // Button action
     @objc func toggleFlashLight() {
@@ -115,7 +160,23 @@ class GameViewController: UIViewController {
     var isDay = false
     @objc func toggleDayLight() {
         print("Button tapped!")
-        ambientLightNode?.light?.intensity = isDay ? 700 : 0
+        let targetIntensity: CGFloat = isDay ? 700 : 0
+        let duration: TimeInterval = 1.0 // Adjust the duration as needed
+
+        let intensityAction = SCNAction.customAction(duration: duration) { (node, elapsedTime) in
+            guard let light = node.light else { return }
+            
+            // Calculate the difference between target intensity and current intensity
+            let intensityDifference = targetIntensity - light.intensity
+            
+            // Calculate the new intensity based on elapsed time and intensity difference
+            let currentIntensity = light.intensity + (intensityDifference * CGFloat(elapsedTime / duration))
+            
+            // Set the new intensity
+            light.intensity = currentIntensity
+        }
+
+        ambientLightNode?.runAction(intensityAction)
         isDay = !isDay
     }
     
@@ -133,9 +194,9 @@ class GameViewController: UIViewController {
         reanimate() // Call reanimate on the first graphics update frame
     }
     
+    var rotAngle = 0.0
     @MainActor
     func reanimate() {
-        var rotAngle = 0.0
         let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 69 comes in)
         rotAngle += 0.05 // Increment rotation of the cube by 0.0005 radians
         // Keep the rotation angle in the range of 0 and pi
@@ -144,7 +205,7 @@ class GameViewController: UIViewController {
         }
         theCube?.eulerAngles = SCNVector3(0, rotAngle, 0) // Rotate cube by the final amount
 
-        Task { try! await Task.sleep(nanoseconds: 10000000)
+        Task { try! await Task.sleep(nanoseconds: 20000000)
             reanimate()
         }
     }
@@ -185,22 +246,46 @@ class GameViewController: UIViewController {
         }
     }
     
+    var cardDirection: [String] = ["north", "east", "south", "west"]
+    var currentForward: Int = 2
+    
+    @objc
+    func handleDoubleTap(_ gestureRecognizer: UISwipeGestureRecognizer) {
+        print("double tap")
+        playerNode?.position = SCNVector3(0, 0.5, 0)
+        playerNode?.rotation = SCNVector4(0, 0, 0, 0)
+    }
+    
+    // holy overengineering
     @objc func handleSwipe(_ gestureRecognizer: UISwipeGestureRecognizer) {
+        print(gestureRecognizer.direction)
         if gestureRecognizer.state == .ended {
+            var forwardVector = SCNVector3(0, 0, 0)
+            if cardDirection[currentForward] == "north" {
+                forwardVector = SCNVector3(1, 0, 0)
+            } else if cardDirection[currentForward] == "east" {
+                forwardVector = SCNVector3(0, 0, -1)
+            } else if cardDirection[currentForward] == "south" {
+                forwardVector = SCNVector3(-1, 0, 0)
+            } else if cardDirection[currentForward] == "west" {
+                forwardVector = SCNVector3(0, 0, 1)
+            }
+            let backwardVector = SCNVector3(-forwardVector.x, -forwardVector.y, -forwardVector.z)
             switch gestureRecognizer.direction {
             case .up:
-                print("Swiped up!")
-                let forwardVector = SCNVector3(-1, 0, 0)  // Adjust this based on your game's logic
-                playerNode?.runAction(SCNAction.move(by: forwardVector, duration: 1))
+                //print("Swiped up!")
+                playerNode?.runAction(SCNAction.move(by: backwardVector, duration: 1))
             case .down:
-                print("Swiped down!")
-                playerNode?.runAction(SCNAction.moveBy(x: 1, y: 0, z: 0, duration: 1))
+                //print("Swiped down!")
+                playerNode?.runAction(SCNAction.move(by: forwardVector, duration: 1))
             case .left:
-                print("Swiped left!")
+                //print("Swiped left!")
                 playerNode?.runAction(SCNAction.rotateBy(x: 0, y: -.pi / 2, z: 0, duration: 1))
+                currentForward = (currentForward + cardDirection.count - 1) % cardDirection.count
             case .right:
-                print("Swiped right!")
+                //print("Swiped right!")
                 playerNode?.runAction(SCNAction.rotateBy(x: 0, y: .pi / 2, z: 0, duration: 1))
+                currentForward = (currentForward + 1) % cardDirection.count
             default:
                 break
             }
