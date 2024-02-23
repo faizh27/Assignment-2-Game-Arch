@@ -33,13 +33,13 @@ class GameViewController: UIViewController {
         // create maze
         let mazeNode = SCNNode() // Create a new SCNNode instance
         mazeNode.name = "Maze" // Set a name for the node if needed
-        var maze = Maze(3, 3)
+        var maze = Maze(5, 10)
         maze.Create(1)
         //print("0: \(maze.GetCell(0, 0))")
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
                 let cell = maze.GetCell(row, col)
-                print("(\(col), \(row)) \(cell)")
+                //print("(\(col), \(row)) \(cell)")
                 let mazeCell = MazeCell(xPos: Float(-row), zPos: Float(col), northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
                 mazeNode.addChildNode(mazeCell)
             }
