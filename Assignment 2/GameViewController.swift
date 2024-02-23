@@ -12,15 +12,15 @@ import SceneKit
 class GameViewController: UIViewController {
 
     let scene = SCNScene(named: "art.scnassets/maze.scn")!
-    let isRotating = true
-    var rotAngle = 0.0
+    var flashLightNode : SCNNode?
+    var ambientLightNode : SCNNode?
+    var playerNode : SCNNode?
+    var cameraNode : SCNNode?
     
     override func viewDidLoad() {
-
+        flashLightNode = scene.rootNode.childNode(withName: "flashLight", recursively: true)!
         super.viewDidLoad()
         
-        var cellSize : CGFloat = 1
-        var wallThickness = 0.1
         var maze = Maze(5, 5)
         maze.Create()
         print(maze.GetCell(0, 0))
@@ -28,7 +28,7 @@ class GameViewController: UIViewController {
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
                 let cell = maze.GetCell(row, col)
-                var mazeCell = MazeCell(xPos: Float(-row), zPos: Float(col), northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
+                let mazeCell = MazeCell(xPos: Float(-row), zPos: Float(col), northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
                 print("(\(mazeCell.zPos), \(mazeCell.xPos)) = \(cell)")
                 
                 scene.rootNode.addChildNode(mazeCell)
@@ -39,73 +39,30 @@ class GameViewController: UIViewController {
         mazeNode.name = "Maze" // Set a name for the node if needed
         scene.rootNode.addChildNode(mazeNode)
         
-        // Iterate through maze cells
-//        for row in 0..<maze.rows {
-//            for col in 0..<maze.cols {
-//                let cell = maze.GetCell(row, col)
-//                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), 0, CGFloat(row) * (cellSize))
-//
-//                // Create a node for the cell
-//                let cellGeometry = SCNBox(width: cellSize, height: 0.0, length: cellSize, chamferRadius: 0)
-//                let cellNode = SCNNode(geometry: cellGeometry)
-//                cellNode.position = cellPosition
-//                mazeNode.addChildNode(cellNode)
-//
-//                // Check walls and create them if present
-//                if cell.northWallPresent {
-//                    let northWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-//                    northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float((cellSize)/2))
-//                    mazeNode.addChildNode(northWallNode)
-//                }
-//                if cell.southWallPresent {
-//                    let southWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-//                    southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float((cellSize))/2)
-//                    mazeNode.addChildNode(southWallNode)
-//
-//                }
-//
-//                if cell.eastWallPresent {
-//
-//                    let eastWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-//
-//                    eastWallNode.position = SCNVector3(cellPosition.x + Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
-//                    mazeNode.addChildNode(eastWallNode)
-//                }
-//
-//                if cell.westWallPresent {
-//                    let westWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-//                    westWallNode.position = SCNVector3(cellPosition.x - Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
-//                    mazeNode.addChildNode(westWallNode)
-//                }
-//            }
-//        }
-        // create and add a camera to the scene
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        scene.rootNode.addChildNode(cameraNode)
+        cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)
         
-        // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
+        playerNode = scene.rootNode.childNode(withName: "player", recursively: true)
+        // day and night
+        ambientLightNode = scene.rootNode.childNode(withName: "ambient", recursively: true)!
         
-        // create and add a light to the scene
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-        scene.rootNode.addChildNode(lightNode)
+        let flashLightButton = UIButton(type: .system)
+        flashLightButton.setTitle("Toggle Flashlight", for: .normal)
+        flashLightButton.addTarget(self, action: #selector(toggleFlashLight), for: .touchUpInside)
+        flashLightButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(flashLightButton)
         
-        // create and add an ambient light to the scene
-        let ambientLightNode = SCNNode()
-        ambientLightNode.light = SCNLight()
-        ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.darkGray
-        scene.rootNode.addChildNode(ambientLightNode)
+        let ambientLightButton = UIButton(type: .system)
+        ambientLightButton.setTitle("Toggle Ambient Light", for: .normal)
+        ambientLightButton.addTarget(self, action: #selector(toggleDayLight), for: .touchUpInside)
+        ambientLightButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(ambientLightButton)
         
-        // retrieve the ship node
-        //let ship = scene.rootNode.childNode(withName: "ship", recursively: true)!
-        
-        // animate the 3d object
-        //ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
+        NSLayoutConstraint.activate([
+                    flashLightButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                    flashLightButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+                    ambientLightButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                    ambientLightButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
+                ])
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView
@@ -114,10 +71,10 @@ class GameViewController: UIViewController {
         scnView.scene = scene
         
         // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
+        //scnView.allowsCameraControl = true
         
         // show statistics such as fps and timing information
-        scnView.showsStatistics = true
+        //scnView.showsStatistics = true
         
         // configure the view
         scnView.backgroundColor = UIColor.black
@@ -126,18 +83,48 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
+        // Add swipe gesture recognizer for each direction
+        let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeUpGesture.direction = .up
+        self.view.addGestureRecognizer(swipeUpGesture)
+        
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeDownGesture.direction = .down
+        self.view.addGestureRecognizer(swipeDownGesture)
+        
+        let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeLeftGesture.direction = .left
+        self.view.addGestureRecognizer(swipeLeftGesture)
+        
+        let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeRightGesture.direction = .right
+        self.view.addGestureRecognizer(swipeRightGesture)
+        
         addCube()
         Task(priority: .userInitiated) {
             await firstUpdate()
         }
     }
     
+    // Button action
+    @objc func toggleFlashLight() {
+        print("Button tapped!")
+        flashLightNode?.isHidden.toggle()
+    }
+    
+    var isDay = false
+    @objc func toggleDayLight() {
+        print("Button tapped!")
+        ambientLightNode?.light?.intensity = isDay ? 700 : 0
+        isDay = !isDay
+    }
+    
     // Create Cube
     func addCube() {
-        let theCube = SCNNode(geometry: SCNBox(width: 0.3, height: 0.3, length: 0.3, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
+        let theCube = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.2, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
         theCube.name = "The Cube" // Name the node so we can reference it later
         theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "crate.jpg") // Diffuse the crate image material across the whole cube
-        theCube.position = SCNVector3(0, 0, 0) // Put the cube at position (0, 0, 0)
+        theCube.position = SCNVector3(0, 0.25, 0) // Put the cube at position (0, 0, 0)
         scene.rootNode.addChildNode(theCube) // Add the cube node to the scene
     }
     
@@ -148,19 +135,16 @@ class GameViewController: UIViewController {
     
     @MainActor
     func reanimate() {
+        var rotAngle = 0.0
         let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 69 comes in)
-        if (isRotating) {
-            rotAngle += 0.05 // Increment rotation of the cube by 0.0005 radians
-            // Keep the rotation angle in the range of 0 and pi
-            if rotAngle > Double.pi {
-                rotAngle -= Double.pi
-            }
+        rotAngle += 0.05 // Increment rotation of the cube by 0.0005 radians
+        // Keep the rotation angle in the range of 0 and pi
+        if rotAngle > Double.pi {
+            rotAngle -= Double.pi
         }
         theCube?.eulerAngles = SCNVector3(0, rotAngle, 0) // Rotate cube by the final amount
-        //let directionalLight = scene.rootNode.childNode(withName: "Directional Light", recursively: true) // Get the cube object by its name (See line 56)
-        //directionalLight?.rotation = diffuseLightPos
-        // Repeat increment of rotation every 10000 nanoseconds
-        Task { try! await Task.sleep(nanoseconds: 100000)
+
+        Task { try! await Task.sleep(nanoseconds: 10000000)
             reanimate()
         }
     }
@@ -198,6 +182,28 @@ class GameViewController: UIViewController {
             material.emission.contents = UIColor.red
             
             SCNTransaction.commit()
+        }
+    }
+    
+    @objc func handleSwipe(_ gestureRecognizer: UISwipeGestureRecognizer) {
+        if gestureRecognizer.state == .ended {
+            switch gestureRecognizer.direction {
+            case .up:
+                print("Swiped up!")
+                let forwardVector = SCNVector3(-1, 0, 0)  // Adjust this based on your game's logic
+                playerNode?.runAction(SCNAction.move(by: forwardVector, duration: 1))
+            case .down:
+                print("Swiped down!")
+                playerNode?.runAction(SCNAction.moveBy(x: 1, y: 0, z: 0, duration: 1))
+            case .left:
+                print("Swiped left!")
+                playerNode?.runAction(SCNAction.rotateBy(x: 0, y: -.pi / 2, z: 0, duration: 1))
+            case .right:
+                print("Swiped right!")
+                playerNode?.runAction(SCNAction.rotateBy(x: 0, y: .pi / 2, z: 0, duration: 1))
+            default:
+                break
+            }
         }
     }
     

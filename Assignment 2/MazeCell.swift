@@ -31,111 +31,52 @@ class MazeCell : SCNNode {
         
         // Create walls based on the presence flags
         if northWall {
-//            let wallGeometry = SCNBox(width: 1.0, height: 1.0, length: 0.05, chamferRadius: 0.0)
-//            let boxMaterial = SCNMaterial()
-//            boxMaterial.diffuse.contents = UIColor.red // Set diffuse color to red
-//            wallGeometry.firstMaterial = boxMaterial
-//            let wallNode = SCNNode(geometry: wallGeometry)
-//            wallNode.position = SCNVector3(0, 0.5, 0.475) // Adjust position to align with cell
-//            self.addChildNode(wallNode)
             let wallGeometry = SCNBox(width: 0.05, height: 1.0, length: 1.0, chamferRadius: 0.0)
-            let boxMaterial = SCNMaterial()
-            boxMaterial.diffuse.contents = UIColor.black // Set diffuse color to red
-            wallGeometry.firstMaterial = boxMaterial
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/blue.jpeg")
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(0.475, 0.5, 0) // Adjust position to align with cell
+            wallNode.castsShadow = true
             self.addChildNode(wallNode)
         }
         if southWall {
-//            let wallGeometry = SCNBox(width: 1.0, height: 1.0, length: 0.05, chamferRadius: 0.0)
-//            let boxMaterial = SCNMaterial()
-//            boxMaterial.diffuse.contents = UIColor.green // Set diffuse color to red
-//            wallGeometry.firstMaterial = boxMaterial
-//            let wallNode = SCNNode(geometry: wallGeometry)
-//            wallNode.position = SCNVector3(0, 0.5, -0.475) // Adjust position to align with cell
-//            self.addChildNode(wallNode)
+
             let wallGeometry = SCNBox(width: 0.05, height: 1.0, length: 1.0, chamferRadius: 0.0)
-            let boxMaterial = SCNMaterial()
-            boxMaterial.diffuse.contents = UIColor.blue // Set diffuse color to red
-            wallGeometry.firstMaterial = boxMaterial
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/brick.jpeg")
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(-0.475, 0.5, 0) // Adjust position to align with cell
+            wallNode.castsShadow = true
             self.addChildNode(wallNode)
         }
         if eastWall {
-//            let wallGeometry = SCNBox(width: 0.05, height: 1.0, length: 1.0, chamferRadius: 0.0)
-//            let boxMaterial = SCNMaterial()
-//            boxMaterial.diffuse.contents = UIColor.blue // Set diffuse color to red
-//            wallGeometry.firstMaterial = boxMaterial
-//            let wallNode = SCNNode(geometry: wallGeometry)
-//            wallNode.position = SCNVector3(-0.475, 0.5, 0) // Adjust position to align with cell
-//            self.addChildNode(wallNode)
+
             let wallGeometry = SCNBox(width: 1.0, height: 1.0, length: 0.05, chamferRadius: 0.0)
-            let boxMaterial = SCNMaterial()
-            boxMaterial.diffuse.contents = UIColor.red // Set diffuse color to red
-            wallGeometry.firstMaterial = boxMaterial
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/dirt.jpeg")
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(0, 0.5, 0.475) // Adjust position to align with cell
+            wallNode.castsShadow = true
             self.addChildNode(wallNode)
         }
         if westWall {
-//            let wallGeometry = SCNBox(width: 0.05, height: 1.0, length: 1.0, chamferRadius: 0.0)
-//            let boxMaterial = SCNMaterial()
-//            boxMaterial.diffuse.contents = UIColor.black // Set diffuse color to red
-//            wallGeometry.firstMaterial = boxMaterial
-//            let wallNode = SCNNode(geometry: wallGeometry)
-//            wallNode.position = SCNVector3(0.475, 0.5, 0) // Adjust position to align with cell
-//            self.addChildNode(wallNode)
+
             let wallGeometry = SCNBox(width: 1.0, height: 1.0, length: 0.05, chamferRadius: 0.0)
-            let boxMaterial = SCNMaterial()
-            boxMaterial.diffuse.contents = UIColor.green // Set diffuse color to red
-            wallGeometry.firstMaterial = boxMaterial
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/wood.jpeg")
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(0, 0.5, -0.475) // Adjust position to align with cell
+            wallNode.castsShadow = true
             self.addChildNode(wallNode)
         }
-//        if northWall {
-//                            let northWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-//                            northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float((cellSize)/2))
-//                            mazeNode.addChildNode(northWallNode)
-//                        }
-//        if southWall {
-//                            let southWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-//                            southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float((cellSize))/2)
-//                            mazeNode.addChildNode(southWallNode)
-//
-//                        }
-//
-//                        if eastWall {
-//
-//                            let eastWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-//
-//                            eastWallNode.position = SCNVector3(cellPosition.x + Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
-//                            mazeNode.addChildNode(eastWallNode)
-//                        }
-//
-//                        if westWall {
-//                            let westWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-//                            westWallNode.position = SCNVector3(cellPosition.x - Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
-//                            mazeNode.addChildNode(westWallNode)
-//                        }
+
         
         // Create the floor or other geometry for the cell
         let floorGeometry = SCNBox(width: 1.0, height: 0.01, length: 1.0, chamferRadius: 0.0)
         let floorNode = SCNNode(geometry: floorGeometry)
         
         // will be changed to whatever the model is
-        floorNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/texture.png")
+        floorNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/cobblestone.jpeg")
         
         self.position = spawnLocation
-        
-//        let angleInDegrees: Float = 45.0
-//        let angleInRadians = angleInDegrees * .pi / 180.0
-//        cubeNode.eulerAngles = SCNVector3(0, angleInRadians, 0)
+        self.castsShadow = true
         self.addChildNode(floorNode)
-        
-        //self._Mesh = cubeGeometry
-        
         
     }
     
