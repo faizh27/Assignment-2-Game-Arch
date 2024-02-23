@@ -8,77 +8,79 @@
 import UIKit
 import QuartzCore
 import SceneKit
+import SpriteKit
 
 class GameViewController: UIViewController {
 
     let scene = SCNScene(named: "art.scnassets/maze.scn")!
-    var flashLightNode : SCNNode?
-    var ambientLightNode : SCNNode?
-    var playerNode : SCNNode?
-    var cameraNode : SCNNode?
     
-    var slider: UISlider!
+    var minimap: SKScene?
+    
+    var flashLightNode: SCNNode?
+    var ambientLightNode: SCNNode?
+    var playerNode: SCNNode?
+    var cameraNode: SCNNode?
+    
+    var fogStartDistanceSlider: UISlider!
+    var fogEndDistanceSlider: UISlider!
+    var fogDensityExponentSlider: UISlider!
     
     override func viewDidLoad() {
-        flashLightNode = scene.rootNode.childNode(withName: "flashLight", recursively: true)!
         super.viewDidLoad()
+        // retrieve the SCNView
+        let scnView = self.view as! SCNView
         
-        // Create a UISlider
-                slider = UISlider(frame: CGRect(x: 50, y: 50, width: 200, height: 20))
-
-                // Configure the slider properties
-                slider.minimumValue = 0
-                slider.maximumValue = 100
-                slider.value = 50
-                slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
-
-                // Add the slider to the view
-                view.addSubview(slider)
-        
+        // create maze
+        let mazeNode = SCNNode() // Create a new SCNNode instance
+        mazeNode.name = "Maze" // Set a name for the node if needed
         var maze = Maze(10, 10)
         maze.Create()
-        print(maze.GetCell(0, 0))
         
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
                 let cell = maze.GetCell(row, col)
                 let mazeCell = MazeCell(xPos: Float(-row), zPos: Float(col), northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
-                print("(\(mazeCell.zPos), \(mazeCell.xPos)) = \(cell)")
-                
-                scene.rootNode.addChildNode(mazeCell)
+                mazeNode.addChildNode(mazeCell)
             }
         }
         
-        let mazeNode = SCNNode() // Create a new SCNNode instance
-        mazeNode.name = "Maze" // Set a name for the node if needed
+        minimap = Minimap(size: self.view.bounds.size)
+        minimap?.setMaze(maze: Maze)
+        minimap?.isHidden = false
+        scnView.overlaySKScene = minimap
+        
         scene.rootNode.addChildNode(mazeNode)
         
-        let fogShader = """
-        #pragma arguments
-        float fogStartDistance;
-        float fogEndDistance;
-        float4 fogColor;
-
-        #pragma transparent
-        #pragma body
-        float depth = _surface.position.z / _surface.position.w;
-        float fogFactor = (depth - fogStartDistance) / (fogEndDistance - fogStartDistance);
-        fogFactor = clamp(fogFactor, 0.0, 1.0);
-        _surface.diffuse.rgb = mix(_surface.diffuse.rgb, fogColor.rgb, fogFactor);
-        """
-        
-        
+        // set up default fog values and scene
         scene.fogStartDistance = 0.0
-        scene.fogEndDistance = 2.0
+        scene.fogEndDistance = 10.0
         scene.fogColor = UIColor.gray
         scene.fogDensityExponent = 2.0
-        scene.rootNode.geometry?.shaderModifiers = [.surface: fogShader]
+        //scene.background.contents = nil
         
-        cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)
-        
+        // get node references
         playerNode = scene.rootNode.childNode(withName: "player", recursively: true)
-        // day and night
+        flashLightNode = scene.rootNode.childNode(withName: "flashLight", recursively: true)!
         ambientLightNode = scene.rootNode.childNode(withName: "ambient", recursively: true)!
+        
+        // UI stuff
+        let label = UILabel(frame: CGRect(x: 20, y: 70, width: 200, height: 30))
+        label.text = "Fog Settings"
+        label.font = UIFont.systemFont(ofSize: 25)
+        label.textColor = UIColor.white
+        view.addSubview(label)
+        
+        fogStartDistanceSlider = createSliderWithName(xPos: 20, yPos: 100, width: 150, height: 30, minValue: 0, maxValue: 10, value: 0, tag: 0, name: "Start Distance")
+        fogEndDistanceSlider = createSliderWithName(xPos: 20, yPos: 150, width: 150, height: 30, minValue: 0, maxValue: 5, value: 10, tag: 1, name: "End Distance")
+        fogDensityExponentSlider = createSliderWithName(xPos: 20, yPos: 200, width: 150, height: 30, minValue: 0, maxValue: 3, value: 2, tag: 2, name: "Density Exponent")
+        
+        // Create and configure the UIColorWell
+        let colorWell = UIColorWell(frame: CGRect(x: 280, y: 60, width: 100, height: 50))
+        colorWell.addTarget(self, action: #selector(colorDidChange(_:)), for: .valueChanged)
+        // Set initial color (optional)
+        colorWell.selectedColor = UIColor.gray
+        // Add the UIColorWell to the view hierarchy
+        view.addSubview(colorWell)
         
         let flashLightButton = UIButton(type: .system)
         flashLightButton.setTitle("Toggle Flashlight", for: .normal)
@@ -93,28 +95,13 @@ class GameViewController: UIViewController {
         view.addSubview(ambientLightButton)
         
         NSLayoutConstraint.activate([
-                    flashLightButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                    flashLightButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-                    ambientLightButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                    ambientLightButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
-                ])
+            flashLightButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            flashLightButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            ambientLightButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            ambientLightButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
+        ])
         
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // set the scene to the view
-        scnView.scene = scene
-        
-        // allows the user to manipulate the camera
-        //scnView.allowsCameraControl = true
-        
-        // show statistics such as fps and timing information
-        //scnView.showsStatistics = true
-        
-        // configure the view
-        scnView.backgroundColor = UIColor.black
-        
-        // add a tap gesture recognizer
+        // add gestures
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
@@ -122,7 +109,11 @@ class GameViewController: UIViewController {
         doubleTapGesture.numberOfTapsRequired = 2
         scnView.addGestureRecognizer(doubleTapGesture)
         
-        // Add swipe gesture recognizer for each direction
+        let twoFingerDoubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTwoFingerDoubleTap(_:)))
+        twoFingerDoubleTapGesture.numberOfTapsRequired = 2
+        twoFingerDoubleTapGesture.numberOfTouchesRequired = 2
+        scnView.addGestureRecognizer(twoFingerDoubleTapGesture)
+        
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeUpGesture.direction = .up
         scnView.addGestureRecognizer(swipeUpGesture)
@@ -139,17 +130,64 @@ class GameViewController: UIViewController {
         swipeRightGesture.direction = .right
         scnView.addGestureRecognizer(swipeRightGesture)
         
+        
+        // miscellaneous down here...
+        
+        // set the scene to the view
+        scnView.scene = scene
+        
+        // configure the view
+        scnView.backgroundColor = UIColor.black
+        
         addCube()
         Task(priority: .userInitiated) {
             await firstUpdate()
         }
     }
     
+    func createSliderWithName(xPos: Int, yPos: Int, width: Int, height: Int, minValue: Float, maxValue: Float, value: Float, tag: Int, name: String) -> UISlider {
+        
+        // Create UIabel
+        let label = UILabel(frame: CGRect(x: xPos, y: yPos, width: width, height: height))
+        label.text = name
+        label.font = UIFont.systemFont(ofSize: 15)
+        view.addSubview(label)
+        
+        // Create a UISlider
+        let slider = UISlider(frame: CGRect(x: xPos + 125, y: yPos, width: width + 50, height: height))
+        slider.minimumValue = minValue
+        slider.maximumValue = maxValue
+        slider.value = value
+        slider.minimumTrackTintColor = UIColor.white
+        slider.maximumTrackTintColor = UIColor.lightGray
+        slider.tag = tag
+        slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+        view.addSubview(slider)
+        
+        return slider
+    }
+    
     @objc func sliderValueChanged(_ sender: UISlider) {
-            // Handle slider value changes
-            let value = sender.value
-            print("Slider value changed to: \(value)")
+        let value = CGFloat(sender.value)
+        print("\(sender.tag) value = \(value)")
+        if sender.tag == 0 {
+            scene.fogStartDistance = value
+        } else if sender.tag == 1 {
+            scene.fogEndDistance = value
+            if fogStartDistanceSlider.maximumValue >= sender.value {
+                fogStartDistanceSlider.maximumValue = sender.value
+                fogStartDistanceSlider.value = sender.value
+            }
+        } else if sender.tag == 2 {
+            scene.fogDensityExponent = value
         }
+    }
+    
+    @objc func colorDidChange(_ sender: UIColorWell) {
+        // Handle color changes
+        let selectedColor = sender.selectedColor
+        scene.fogColor = selectedColor!
+    }
     
     // Button action
     @objc func toggleFlashLight() {
@@ -212,53 +250,25 @@ class GameViewController: UIViewController {
     
     @objc
     func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
-            
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
-            
-            material.emission.contents = UIColor.red
-            
-            SCNTransaction.commit()
-        }
+    }
+    
+    @objc
+    func handleTwoFingerDoubleTap(_ gestureRecognizer: UIGestureRecognizer) {
+        minimap?.isHidden.toggle()
     }
     
     var cardDirection: [String] = ["north", "east", "south", "west"]
     var currentForward: Int = 2
-    
     @objc
-    func handleDoubleTap(_ gestureRecognizer: UISwipeGestureRecognizer) {
-        print("double tap")
+    func handleDoubleTap(_ gestureRecognizer: UIGestureRecognizer) {
         playerNode?.position = SCNVector3(0, 0.5, 0)
         playerNode?.rotation = SCNVector4(0, 0, 0, 0)
+        currentForward = 2
     }
     
     // holy overengineering
-    @objc func handleSwipe(_ gestureRecognizer: UISwipeGestureRecognizer) {
-        print(gestureRecognizer.direction)
+    @objc
+    func handleSwipe(_ gestureRecognizer: UISwipeGestureRecognizer) {
         if gestureRecognizer.state == .ended {
             var forwardVector = SCNVector3(0, 0, 0)
             if cardDirection[currentForward] == "north" {
