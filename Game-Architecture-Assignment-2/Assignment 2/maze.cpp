@@ -40,20 +40,22 @@ Maze::Maze(int rows, int cols)
 
 Maze::~Maze()
 {
-	delete mazeSet;
-	for (int i=0; i<rows; i++)
-		free(maze[i]);
-	free(maze);
+//	delete mazeSet;
+//	for (int i=0; i<rows; i++)
+//		free(maze[i]);
+//	free(maze);
 }
 
-void Maze::Create()
+void Maze::Create(int seed)
 {
 	maze[0][0].northWallPresent = false;			// entrance
 	maze[rows-1][cols-1].southWallPresent = false;	// exit
-	srand((unsigned int)time(NULL));
+	//srand((unsigned int)time(NULL));
+    srand(seed);
 	int entrySet = mazeSet->Find(0);
 	int exitSet = mazeSet->Find(((rows*cols)-1));
 
+    
 	while (entrySet != exitSet) {
 
 		// Pick a random wall to knock down

@@ -19,6 +19,7 @@
 		0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3562B8183E2003489DC /* DisjointSet.cpp */; };
 		0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3592B8183E2003489DC /* maze.cpp */; };
 		4E224E102B8559B100D2C342 /* crate.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E224E0F2B8559B100D2C342 /* crate.jpg */; };
+		FB2E53342B88735D0082C902 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2E53332B88735D0082C902 /* Globals.swift */; };
 		FBE721192B885B51004D0E9C /* Minimap.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE721182B885B51004D0E9C /* Minimap.swift */; };
 		FBFDBE702B857EB70071A1F6 /* MazeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFDBE6F2B857EB70071A1F6 /* MazeCell.swift */; };
 /* End PBXBuildFile section */
@@ -59,6 +60,7 @@
 		0CF5B3582B8183E2003489DC /* DisjointSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisjointSet.h; sourceTree = "<group>"; };
 		0CF5B3592B8183E2003489DC /* maze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = maze.cpp; sourceTree = "<group>"; };
 		4E224E0F2B8559B100D2C342 /* crate.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = crate.jpg; sourceTree = "<group>"; };
+		FB2E53332B88735D0082C902 /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		FBE721182B885B51004D0E9C /* Minimap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Minimap.swift; sourceTree = "<group>"; };
 		FBFDBE6F2B857EB70071A1F6 /* MazeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MazeCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -125,6 +127,7 @@
 				4E224E0F2B8559B100D2C342 /* crate.jpg */,
 				FBFDBE6F2B857EB70071A1F6 /* MazeCell.swift */,
 				FBE721182B885B51004D0E9C /* Minimap.swift */,
+				FB2E53332B88735D0082C902 /* Globals.swift */,
 			);
 			path = "Assignment 2";
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */,
 				0CF5B3272B8183AC003489DC /* AppDelegate.swift in Sources */,
 				FBFDBE702B857EB70071A1F6 /* MazeCell.swift in Sources */,
+				FB2E53342B88735D0082C902 /* Globals.swift in Sources */,
 				FBE721192B885B51004D0E9C /* Minimap.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
