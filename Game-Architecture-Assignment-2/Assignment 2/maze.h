@@ -35,7 +35,8 @@ class Maze
 		~Maze();
 		MazeCell GetCell(int r, int c);
 
-		void Create(int seed);	// creates a random maze
+        void Create();
+		void CreateWithSeed(int seed);	// creates a random maze
 
 	private:
 		DisjointSet *mazeSet;

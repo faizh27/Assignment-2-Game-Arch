@@ -14,7 +14,7 @@ class GameViewController: UIViewController {
 
     let scene = SCNScene(named: "art.scnassets/maze.scn")!
     
-    var minimap: SKScene?
+    var minimap: Minimap?
     
     var flashLightNode: SCNNode?
     var ambientLightNode: SCNNode?
@@ -34,7 +34,8 @@ class GameViewController: UIViewController {
         let mazeNode = SCNNode() // Create a new SCNNode instance
         mazeNode.name = "Maze" // Set a name for the node if needed
         var maze = Maze(5, 10)
-        maze.Create(1)
+        maze.Create()
+        //maze.CreateWithSeed(1)
         //print("0: \(maze.GetCell(0, 0))")
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
@@ -45,9 +46,7 @@ class GameViewController: UIViewController {
             }
         }
         minimap = Minimap(size: self.view.bounds.size, maze: maze)
-        minimap?.isHidden = false
-        //minimap?.zRotation = CGFloat(90)
-        //minimap?.scaleMode
+        minimap?.isHidden = true
         scnView.overlaySKScene = minimap
         
         scene.rootNode.addChildNode(mazeNode)
@@ -285,16 +284,20 @@ class GameViewController: UIViewController {
             switch gestureRecognizer.direction {
             case .up:
                 //print("Swiped up!")
+                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .up)
                 playerNode?.runAction(SCNAction.move(by: backwardVector, duration: 1))
             case .down:
                 //print("Swiped down!")
+                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .down)
                 playerNode?.runAction(SCNAction.move(by: forwardVector, duration: 1))
             case .left:
                 //print("Swiped left!")
+                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .left)
                 playerNode?.runAction(SCNAction.rotateBy(x: 0, y: -.pi / 2, z: 0, duration: 1))
                 currentForward = (currentForward + cardDirection.count - 1) % cardDirection.count
             case .right:
                 //print("Swiped right!")
+                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .right)
                 playerNode?.runAction(SCNAction.rotateBy(x: 0, y: .pi / 2, z: 0, duration: 1))
                 currentForward = (currentForward + 1) % cardDirection.count
             default:

@@ -10,15 +10,18 @@ import SceneKit
 import SpriteKit
 
 class Minimap: SKScene {
+    // maze stuff
     var numberOfRows = 0 // Number of rows in the grid
     var numberOfColumns = 0 // Number of columns in the grid
-    let minimapWidth: CGFloat = 250 // Width of the screen
-    let minimapHeight: CGFloat = 250 // Height of the screen
+    let minimapWidth: CGFloat = 300 // Width of the screen
+    let minimapHeight: CGFloat = 300 // Height of the screen
     var cellSize: CGSize = CGSize(width: 0, height: 0)
     let wallWidth: CGFloat = 3
     let wallColor: UIColor = .white
-
+    var gridCoordinates: [String: CGPoint] = [:]
     public var maze: Maze = Maze(0, 0)
+    
+    var playerNode: SKShapeNode!
     
     init(size: CGSize, maze: Maze) {
         self.maze = maze
@@ -35,19 +38,68 @@ class Minimap: SKScene {
     
     override func didMove(to view: SKView) {
         //anchorPoint = CGPoint(x: 0.0, y: 0.0)
-        }
-    
-    var aDic: [String: CGPoint] = [:]
-
-
-    func createGridCoordinates() {
         
+        // Create a triangle shape
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: -5, y: -5))
+        path.addLine(to: CGPoint(x: 0, y: 5))
+        path.addLine(to: CGPoint(x: 5, y:-5))
+        path.closeSubpath()
+        
+        playerNode = SKShapeNode(path: path)
+        playerNode.fillColor = .white
+        playerNode.strokeColor = .clear
+        playerNode.zRotation += CGFloat.pi
+        
+        // Position the triangle at a specific point
+        playerNode.position = gridCoordinates["\(0),\(0)"]!
+        
+        // Add the triangle to the scene
+        addChild(playerNode)
+    }
+
+    var cardDirection: [String] = ["north", "east", "south", "west"]
+    
+    func moveTriangle(currentForward: Int, swipeDirection: UISwipeGestureRecognizer.Direction) {
+        // Move the triangle to a new position
+        var newPosition = playerNode.position
+        var backwardPosition = playerNode.position
+        if cardDirection[currentForward] == "north" {
+            newPosition.y += cellSize.height
+            backwardPosition.y -= cellSize.height
+        } else if cardDirection[currentForward] == "east" {
+            newPosition.x -= cellSize.width
+            backwardPosition.x += cellSize.width
+        } else if cardDirection[currentForward] == "south" {
+            newPosition.y -= cellSize.height
+            backwardPosition.y += cellSize.height
+        } else if cardDirection[currentForward] == "west" {
+            newPosition.x += cellSize.width
+            backwardPosition.x -= cellSize.width
+        }
+        switch swipeDirection {
+        case .up:
+            playerNode?.run(SKAction.move(to: backwardPosition, duration: 1.0))
+        case .down:
+            playerNode?.run(SKAction.move(to: newPosition, duration: 1.0))
+        case .left:
+            playerNode?.run(SKAction.rotate(byAngle: -CGFloat.pi / 2, duration: 1.0))
+        case .right:
+            playerNode?.run(SKAction.rotate(byAngle: CGFloat.pi / 2, duration: 1.0))
+        default:
+            break
+        }
+    }
+    
+    
+    // idk I can't believe I did all this
+    func createGridCoordinates() {
         let startX = (UIScreen.main.bounds.size.width - minimapWidth) / 2
         let startY = (UIScreen.main.bounds.size.height - minimapHeight) / 2
         
         let cellWidth = minimapWidth / CGFloat(numberOfColumns)
         let cellHeight = minimapHeight / CGFloat(numberOfRows)
-        cellSize = CGSize(width: cellWidth, height: cellHeight)
+        cellSize = CGSize(width: min(cellWidth, cellHeight), height: min(cellWidth, cellHeight))
         
         let cellCenter: CGPoint = CGPoint(x: cellWidth / 2, y: cellHeight / 2)
         
@@ -58,35 +110,35 @@ class Minimap: SKScene {
                 let x = startX + CGFloat(col) * cellSize.width + cellCenter.x
                 let y = startY + CGFloat(row) * cellSize.height + cellCenter.y
                 let string = "\(col),\(reverseRows)"
-                aDic[string] = CGPoint(x: x, y: y)
+                gridCoordinates[string] = CGPoint(x: x, y: y)
             }
             reverseRows -= 1
         }
         
         print("")
-        for (key, value) in aDic {
+        for (key, value) in gridCoordinates {
             print("Key:", key, "Value:", value)
         }
     }
     
     func createMiniMap() {
-        for (key, value) in aDic {
-            print("Key:", key, "Value:", value)
-            let pointSize: CGFloat = 4 // Set the size of the point
-            let point = SKShapeNode(circleOfRadius: pointSize / 2)
-            point.fillColor = .green
-            point.strokeColor = .clear
-            point.position = value
-            addChild(point)
-            
-        }
-        
         for row in 0..<numberOfRows {
             for col in 0..<numberOfColumns {
                 let cell = maze.GetCell(Int32(row), Int32(col))
-                drawCell(pos: aDic["\(col),\(row)"]!, northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
+                drawCell(pos: gridCoordinates["\(col),\(row)"]!, northWall: cell.northWallPresent, southWall: cell.southWallPresent, eastWall: cell.eastWallPresent, westWall: cell.westWallPresent)
             }
         }
+        
+        // uncomment to see grid points
+//        for (key, value) in gridCoordinates {
+//            print("Key:", key, "Value:", value)
+//            let pointSize: CGFloat = 4 // Set the size of the point
+//            let point = SKShapeNode(circleOfRadius: pointSize / 2)
+//            point.fillColor = .green
+//            point.strokeColor = .clear
+//            point.position = value
+//            addChild(point)
+//        }
     }
     
     func drawCell(pos: CGPoint, northWall: Bool, southWall: Bool, eastWall: Bool, westWall: Bool) {
