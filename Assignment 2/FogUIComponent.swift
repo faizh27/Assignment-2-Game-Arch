@@ -18,6 +18,8 @@ class FogUIComponent: UIView {
     let blueFog = UIButton(type: .system)
     let greenFog = UIButton(type: .system)
     
+    var fogUIColorChangeHandler: ((UIColor) -> Void)?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -62,6 +64,27 @@ class FogUIComponent: UIView {
         greenFog.setTitle("Green Fog", for: .normal)
         customizeButton(button: greenFog, bgColor: UIColor.green)
         addSubview(greenFog)
+        
+        grayFog.addTarget(self, action: #selector(grayFogTapped), for: .touchUpInside)
+        redFog.addTarget(self, action: #selector(redFogTapped), for: .touchUpInside)
+        blueFog.addTarget(self, action: #selector(blueFogTapped), for: .touchUpInside)
+        greenFog.addTarget(self, action: #selector(greenFogTapped), for: .touchUpInside)
+    }
+    
+    @objc func grayFogTapped() {
+        fogUIColorChangeHandler?(.gray)
+    }
+    
+    @objc func redFogTapped() {
+        fogUIColorChangeHandler?(.red)
+    }
+    
+    @objc func blueFogTapped() {
+        fogUIColorChangeHandler?(.blue)
+    }
+    
+    @objc func greenFogTapped() {
+        fogUIColorChangeHandler?(.green)
     }
     
     required init?(coder aDecoder: NSCoder) {
