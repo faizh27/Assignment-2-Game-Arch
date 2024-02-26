@@ -27,7 +27,7 @@ class GameViewController: UIViewController {
     let camRotScale: Float = 50
     let camMoveScale: Float = 50
     
-    var isFogUIVisible = false
+    var fogUI: FogUIComponent?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,9 +67,12 @@ class GameViewController: UIViewController {
         scnView.backgroundColor = UIColor.black
         
         // add fog ui
-        let fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
-        fogUI.backgroundColor = .lightGray
-        view.addSubview(fogUI)
+        fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
+        fogUI?.backgroundColor = .lightGray
+        fogUI?.fogUIColorChangeHandler = { [weak self] color in
+            self?.scene.fogColor = color
+        }
+        view.addSubview(fogUI!)
         
         // add double tap gesture -- camera orientation reset
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
