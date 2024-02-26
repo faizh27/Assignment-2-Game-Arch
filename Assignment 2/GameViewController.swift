@@ -25,6 +25,7 @@ class GameViewController: UIViewController {
     let defaultCamRot = SCNVector3(x: 0, y: 3.14159265, z: 0)
     let defaultCamPos = SCNVector3(x: 0, y: 0, z: -3)
     let camRotScale: Float = 50
+    let camMoveScale: Float = 50
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,11 +58,6 @@ class GameViewController: UIViewController {
         
         // configure the view
         scnView.backgroundColor = UIColor.black
-        
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        tapGesture.numberOfTapsRequired = 1
-        scnView.addGestureRecognizer(tapGesture)
         
         // add double tap gesture -- camera orientation reset
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
@@ -183,42 +179,6 @@ class GameViewController: UIViewController {
     }
     
     @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
-            
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
-            
-            material.emission.contents = UIColor.red
-            
-            SCNTransaction.commit()
-        }
-    }
-    
-    @objc
     func handleDoubleTap(_ gestureRecognize: UITapGestureRecognizer) {
         // reset cam's orientation and position to where it started
         cameraNode.position = defaultCamPos
@@ -237,11 +197,20 @@ class GameViewController: UIViewController {
             
             // Get delta values of inputs from pan gesture
             let xDelta = Float(translation.x) / camRotScale
-            let yDelta = Float(translation.y) / camRotScale
+            let yDelta = Float(translation.y) / camMoveScale
 
             // Coordinates are weird, application of delta values are swapped on euler coordinates
-            let change = SCNVector3(initialCameraRot.x - yDelta, initialCameraRot.y - xDelta, initialCameraRot.z)
+            let change = SCNVector3(initialCameraRot.x, initialCameraRot.y - xDelta, initialCameraRot.z)
             cameraNode.eulerAngles = change
+            
+            // Get camera position and its front facing vector
+            let cameraPos = cameraNode.presentation.position
+            let cameraDirection = cameraNode.presentation.worldFront
+            let move = min(yDelta * -1, 5)
+            
+            // Create and assign new position
+            let newPos = SCNVector3(x: cameraPos.x + cameraDirection.x * move, y: cameraPos.y + cameraDirection.y * move, z: cameraPos.z + cameraDirection.z * move)
+            cameraNode.position = newPos
 
             // essentially resets the origin point of touch to align with the moving finger
             gestureRecognize.setTranslation(CGPointZero, in: scnView)
