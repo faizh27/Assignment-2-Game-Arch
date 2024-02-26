@@ -8,38 +8,72 @@
 import UIKit
 
 class FogUIComponent: UIView {
-    // Declare sliders and buttons
-    let slider1 = UISlider()
-    let slider2 = UISlider()
-    let button1 = UIButton(type: .system)
-    let button2 = UIButton(type: .system)
+    let startDistance = UISlider()
+    let endDistance = UISlider()
+    let density = UISlider()
+    
+    let fogToggle = UIButton(type: .system)
+    let grayFog = UIButton(type: .system)
+    let redFog = UIButton(type: .system)
+    let blueFog = UIButton(type: .system)
+    let greenFog = UIButton(type: .system)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         // Customize sliders
-        slider1.frame = CGRect(x: 20, y: 20, width: frame.width - 40, height: 20)
-        slider1.minimumValue = 0
-        slider1.maximumValue = 100
-        addSubview(slider1)
+        startDistance.frame = CGRect(x: 20, y: 20, width: frame.width - 40, height: 20)
+        startDistance.minimumValue = 0
+        startDistance.maximumValue = 20
+        addSubview(startDistance)
         
-        slider2.frame = CGRect(x: 20, y: 60, width: frame.width - 40, height: 20)
-        slider2.minimumValue = 0
-        slider2.maximumValue = 100
-        addSubview(slider2)
+        endDistance.frame = CGRect(x: 20, y: 60, width: frame.width - 40, height: 20)
+        endDistance.minimumValue = 0
+        endDistance.maximumValue = 20
+        addSubview(endDistance)
+        
+        density.frame = CGRect(x: 20, y: 100, width: frame.width - 40, height: 20)
+        density.minimumValue = 1
+        density.maximumValue = 2
+        addSubview(density)
         
         // Customize buttons
-        button1.frame = CGRect(x: 20, y: 100, width: frame.width - 40, height: 40)
-        button1.setTitle("Button 1", for: .normal)
-        addSubview(button1)
+        fogToggle.frame = CGRect(x: 110, y: 130, width: 90, height: 35)
+        fogToggle.setTitle("On/Off", for: .normal)
+        customizeButton(button: fogToggle, bgColor: UIColor.white)
+        addSubview(fogToggle)
         
-        button2.frame = CGRect(x: 20, y: 150, width: frame.width - 40, height: 40)
-        button2.setTitle("Button 2", for: .normal)
-        addSubview(button2)
+        grayFog.frame = CGRect(x: 50, y: 180, width: 90, height: 35)
+        grayFog.setTitle("Gray Fog", for: .normal)
+        customizeButton(button: grayFog, bgColor: UIColor.lightGray)
+        addSubview(grayFog)
+        
+        redFog.frame = CGRect(x: 50, y: 230, width: 90, height: 35)
+        redFog.setTitle("Red Fog", for: .normal)
+        customizeButton(button: redFog, bgColor: UIColor.red)
+        addSubview(redFog)
+        
+        blueFog.frame = CGRect(x: 180, y: 180, width: 90, height: 35)
+        blueFog.setTitle("Blue Fog", for: .normal)
+        customizeButton(button: blueFog, bgColor: UIColor.blue)
+        addSubview(blueFog)
+        
+        greenFog.frame = CGRect(x: 180, y: 230, width: 90, height: 35)
+        greenFog.setTitle("Green Fog", for: .normal)
+        customizeButton(button: greenFog, bgColor: UIColor.green)
+        addSubview(greenFog)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func customizeButton(button: UIButton, bgColor: UIColor) {
+        button.setTitleColor(UIColor.black, for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.backgroundColor = bgColor.cgColor
     }
 }
 

@@ -54,7 +54,6 @@ class GameViewController: UIViewController {
         lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
         scene.rootNode.addChildNode(lightNode)
 
-
         // retrieve the SCNView
         let scnView = self.view as! SCNView
         
@@ -68,7 +67,7 @@ class GameViewController: UIViewController {
         scnView.backgroundColor = UIColor.black
         
         // add fog ui
-        let fogUI = FogUIComponent(frame: CGRect(x: 50, y: 100, width: 100, height: 200))
+        let fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
         fogUI.backgroundColor = .lightGray
         view.addSubview(fogUI)
         
