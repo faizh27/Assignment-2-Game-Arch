@@ -29,6 +29,12 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // init fog effects
+        scene.fogColor = UIColor.darkGray
+        scene.fogStartDistance = 0
+        scene.fogEndDistance = 2.5
+        scene.fogDensityExponent = 1.0
 
         cameraNode.camera = SCNCamera()
         cameraNode.name = "camera"
