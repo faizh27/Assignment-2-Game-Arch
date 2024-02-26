@@ -21,20 +21,22 @@ class GameViewController: UIViewController {
     // create a new scene
     let scene = SCNScene(named: "art.scnassets/main.scn")!
     let mazeSize = 10
+    
+    let defaultCamRot = SCNVector3(x: 0, y: 3.14159265, z: 0)
+    let defaultCamPos = SCNVector3(x: 0, y: 0, z: -3)
+    let camRotScale: Float = 50
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         cameraNode.camera = SCNCamera()
         cameraNode.name = "camera"
-        
-        let cameraRotation = SCNVector3(x: 0, y: 3.14159265, z: 0) // Adjust the rotation angles as needed
-        
-        cameraNode.eulerAngles = cameraRotation
+                
+        cameraNode.eulerAngles = defaultCamRot
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: -3)
+        cameraNode.position = defaultCamPos
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -50,9 +52,6 @@ class GameViewController: UIViewController {
         // set the scene to the view
         scnView.scene = scene
         
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
-        
         // show statistics such as fps and timing information
         scnView.showsStatistics = true
         
@@ -61,7 +60,14 @@ class GameViewController: UIViewController {
         
         // add a tap gesture recognizer
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        tapGesture.numberOfTapsRequired = 1
         scnView.addGestureRecognizer(tapGesture)
+        
+        // add double tap gesture -- camera orientation reset
+        
+        // add pan gesture
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleDrag(_:)))
+        scnView.addGestureRecognizer(panGesture)
         
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
@@ -206,6 +212,32 @@ class GameViewController: UIViewController {
             material.emission.contents = UIColor.red
             
             SCNTransaction.commit()
+        }
+    }
+    
+    @objc
+    func handleDrag(_ gestureRecognize: UIPanGestureRecognizer) {
+        let scnView = self.view as! SCNView
+        
+        switch gestureRecognize.state {
+            
+        case .changed:
+            let translation = gestureRecognize.translation(in: scnView)
+            let initialCameraRot = cameraNode.eulerAngles // Get cam's orientation before
+            
+            // Get delta values of inputs from pan gesture
+            let xDelta = Float(translation.x) / camRotScale
+            let yDelta = Float(translation.y) / camRotScale
+
+            // Coordinates are weird, application of delta values are swapped on euler coordinates
+            let change = SCNVector3(initialCameraRot.x - yDelta, initialCameraRot.y - xDelta, initialCameraRot.z)
+            cameraNode.eulerAngles = change
+
+            // essentially resets the origin point of touch to align with the moving finger
+            gestureRecognize.setTranslation(CGPointZero, in: scnView)
+            
+        default:
+            break
         }
     }
     
