@@ -21,20 +21,23 @@ class GameViewController: UIViewController {
     // create a new scene
     let scene = SCNScene(named: "art.scnassets/main.scn")!
     let mazeSize = 10
+    
+    let defaultCamRot = SCNVector3(x: 0, y: 3.14159265, z: 0)
+    let defaultCamPos = SCNVector3(x: 0, y: 0, z: -3)
+    let camRotScale: Float = 50
+    let camMoveScale: Float = 50
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         cameraNode.camera = SCNCamera()
         cameraNode.name = "camera"
-        
-        let cameraRotation = SCNVector3(x: 0, y: 3.14159265, z: 0) // Adjust the rotation angles as needed
-        
-        cameraNode.eulerAngles = cameraRotation
+                
+        cameraNode.eulerAngles = defaultCamRot
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: -3)
+        cameraNode.position = defaultCamPos
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -50,18 +53,20 @@ class GameViewController: UIViewController {
         // set the scene to the view
         scnView.scene = scene
         
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
-        
         // show statistics such as fps and timing information
         scnView.showsStatistics = true
         
         // configure the view
         scnView.backgroundColor = UIColor.black
         
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
+        // add double tap gesture -- camera orientation reset
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        scnView.addGestureRecognizer(doubleTapGesture)
+        
+        // add pan gesture
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleDrag(_:)))
+        scnView.addGestureRecognizer(panGesture)
         
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
@@ -174,38 +179,44 @@ class GameViewController: UIViewController {
     }
     
     @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
+    func handleDoubleTap(_ gestureRecognize: UITapGestureRecognizer) {
+        // reset cam's orientation and position to where it started
+        cameraNode.position = defaultCamPos
+        cameraNode.eulerAngles = defaultCamRot
+    }
+    
+    @objc
+    func handleDrag(_ gestureRecognize: UIPanGestureRecognizer) {
         let scnView = self.view as! SCNView
         
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
+        switch gestureRecognize.state {
             
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
+        case .changed:
+            let translation = gestureRecognize.translation(in: scnView)
+            let initialCameraRot = cameraNode.eulerAngles // Get cam's orientation before
             
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
+            // Get delta values of inputs from pan gesture
+            let xDelta = Float(translation.x) / camRotScale
+            let yDelta = Float(translation.y) / camMoveScale
+
+            // Coordinates are weird, application of delta values are swapped on euler coordinates
+            let change = SCNVector3(initialCameraRot.x, initialCameraRot.y - xDelta, initialCameraRot.z)
+            cameraNode.eulerAngles = change
             
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
+            // Get camera position and its front facing vector
+            let cameraPos = cameraNode.presentation.position
+            let cameraDirection = cameraNode.presentation.worldFront
+            let move = min(yDelta * -1, 5)
             
-            material.emission.contents = UIColor.red
+            // Create and assign new position
+            let newPos = SCNVector3(x: cameraPos.x + cameraDirection.x * move, y: cameraPos.y + cameraDirection.y * move, z: cameraPos.z + cameraDirection.z * move)
+            cameraNode.position = newPos
+
+            // essentially resets the origin point of touch to align with the moving finger
+            gestureRecognize.setTranslation(CGPointZero, in: scnView)
             
-            SCNTransaction.commit()
+        default:
+            break
         }
     }
     
