@@ -64,6 +64,9 @@ class GameViewController: UIViewController {
         scnView.addGestureRecognizer(tapGesture)
         
         // add double tap gesture -- camera orientation reset
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        scnView.addGestureRecognizer(doubleTapGesture)
         
         // add pan gesture
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleDrag(_:)))
@@ -213,6 +216,13 @@ class GameViewController: UIViewController {
             
             SCNTransaction.commit()
         }
+    }
+    
+    @objc
+    func handleDoubleTap(_ gestureRecognize: UITapGestureRecognizer) {
+        // reset cam's orientation and position to where it started
+        cameraNode.position = defaultCamPos
+        cameraNode.eulerAngles = defaultCamRot
     }
     
     @objc
