@@ -120,6 +120,12 @@ class GameViewController: UIViewController {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleDrag(_:)))
         scnView.addGestureRecognizer(panGesture)
         
+        // add 2 finger double tap gesture
+        let twoFingerDoubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handle2FingerDoubleTap(_:)))
+        twoFingerDoubleTapGesture.numberOfTapsRequired = 2
+        twoFingerDoubleTapGesture.numberOfTouchesRequired = 2
+        scnView.addGestureRecognizer(twoFingerDoubleTapGesture)
+        
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
         flashlightButton.setTitleColor(.white, for: .normal) // Set text color to white
@@ -275,6 +281,12 @@ class GameViewController: UIViewController {
         default:
             break
         }
+    }
+    
+    @objc
+    private func handle2FingerDoubleTap(_ gestureRecognizr: UITapGestureRecognizer) {
+        // Hold Alt key to use 2 finger/touch
+        print("2 finger double tap")
     }
     
     private func toggleFog() {
