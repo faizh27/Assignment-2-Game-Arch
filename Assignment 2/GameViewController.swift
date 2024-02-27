@@ -29,6 +29,9 @@ class GameViewController: UIViewController {
     
     var fogUI: FogUIComponent?
     var isFogEnabled = true
+    var savedFogStartDistance: CGFloat?
+    var savedFogEndDistance: CGFloat?
+    var savedFogDensity: CGFloat?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +41,9 @@ class GameViewController: UIViewController {
         scene.fogStartDistance = 0
         scene.fogEndDistance = 2.5
         scene.fogDensityExponent = 1.0
+        savedFogStartDistance = scene.fogStartDistance
+        savedFogEndDistance = scene.fogEndDistance
+        savedFogDensity = scene.fogDensityExponent
 
         cameraNode.camera = SCNCamera()
         cameraNode.name = "camera"
@@ -83,13 +89,19 @@ class GameViewController: UIViewController {
         
         // add fog value handlers
         fogUI?.startDistanceHandler = { [weak self] value in
-            self?.scene.fogStartDistance = CGFloat(value)
+            if (self!.isFogEnabled) {
+                self?.scene.fogStartDistance = CGFloat(value)
+            }
         }
         fogUI?.endDistanceHandler = { [weak self] value in
-            self?.scene.fogEndDistance = CGFloat(value)
+            if (self!.isFogEnabled) {
+                self?.scene.fogEndDistance = CGFloat(value)
+            }
         }
         fogUI?.densityHandler = { [weak self] value in
-            self?.scene.fogDensityExponent = CGFloat(value)
+            if (self!.isFogEnabled) {
+                self?.scene.fogDensityExponent = CGFloat(value)
+            }
         }
         view.addSubview(fogUI!)
         
@@ -258,10 +270,16 @@ class GameViewController: UIViewController {
         isFogEnabled.toggle()
         
         if (isFogEnabled) {
-            scene.fogStartDistance = 0
-            scene.fogEndDistance = 2.5
-            scene.fogDensityExponent = 1.0
+            scene.fogStartDistance = savedFogStartDistance!
+            scene.fogEndDistance = savedFogEndDistance!
+            scene.fogDensityExponent = savedFogDensity!
         } else {
+            // save previous changes
+            savedFogStartDistance = scene.fogStartDistance
+            savedFogEndDistance = scene.fogEndDistance
+            savedFogDensity = scene.fogDensityExponent
+            
+            // turn off fog
             scene.fogStartDistance = 0
             scene.fogEndDistance = 0
             scene.fogDensityExponent = 0

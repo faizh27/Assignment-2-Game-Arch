@@ -31,17 +31,20 @@ class FogUIComponent: UIView {
         // Customize sliders
         startDistanceSlider.frame = CGRect(x: 20, y: 20, width: frame.width - 40, height: 20)
         startDistanceSlider.minimumValue = 0
-        startDistanceSlider.maximumValue = 20
+        startDistanceSlider.maximumValue = 15
+        startDistanceSlider.value = 0
         addSubview(startDistanceSlider)
         
         endDistanceSlider.frame = CGRect(x: 20, y: 60, width: frame.width - 40, height: 20)
         endDistanceSlider.minimumValue = 0
-        endDistanceSlider.maximumValue = 20
+        endDistanceSlider.maximumValue = 15
+        endDistanceSlider.value = 2.5
         addSubview(endDistanceSlider)
         
         densitySlider.frame = CGRect(x: 20, y: 100, width: frame.width - 40, height: 20)
         densitySlider.minimumValue = 1
         densitySlider.maximumValue = 2
+        densitySlider.value = 1
         addSubview(densitySlider)
         
         // Customize buttons
