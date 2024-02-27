@@ -8,9 +8,9 @@
 import UIKit
 
 class FogUIComponent: UIView {
-    let startDistance = UISlider()
-    let endDistance = UISlider()
-    let density = UISlider()
+    let startDistanceSlider = UISlider()
+    let endDistanceSlider = UISlider()
+    let densitySlider = UISlider()
     
     let fogToggle = UIButton(type: .system)
     let grayFog = UIButton(type: .system)
@@ -21,58 +21,69 @@ class FogUIComponent: UIView {
     var fogUIColorChangeHandler: ((UIColor) -> Void)?
     var fogToggleHandler: (() -> Void)?
     
+    var startDistanceHandler: ((Float) -> Void)?
+    var endDistanceHandler: ((Float) -> Void)?
+    var densityHandler: ((Float) -> Void)?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         // Customize sliders
-        startDistance.frame = CGRect(x: 20, y: 20, width: frame.width - 40, height: 20)
-        startDistance.minimumValue = 0
-        startDistance.maximumValue = 20
-        addSubview(startDistance)
+        startDistanceSlider.frame = CGRect(x: 20, y: 20, width: frame.width - 40, height: 20)
+        startDistanceSlider.minimumValue = 0
+        startDistanceSlider.maximumValue = 20
+        addSubview(startDistanceSlider)
         
-        endDistance.frame = CGRect(x: 20, y: 60, width: frame.width - 40, height: 20)
-        endDistance.minimumValue = 0
-        endDistance.maximumValue = 20
-        addSubview(endDistance)
+        endDistanceSlider.frame = CGRect(x: 20, y: 60, width: frame.width - 40, height: 20)
+        endDistanceSlider.minimumValue = 0
+        endDistanceSlider.maximumValue = 20
+        addSubview(endDistanceSlider)
         
-        density.frame = CGRect(x: 20, y: 100, width: frame.width - 40, height: 20)
-        density.minimumValue = 1
-        density.maximumValue = 2
-        addSubview(density)
+        densitySlider.frame = CGRect(x: 20, y: 100, width: frame.width - 40, height: 20)
+        densitySlider.minimumValue = 1
+        densitySlider.maximumValue = 2
+        addSubview(densitySlider)
         
         // Customize buttons
         fogToggle.frame = CGRect(x: 110, y: 130, width: 90, height: 35)
         fogToggle.setTitle("On/Off", for: .normal)
-        customizeButton(button: fogToggle, bgColor: UIColor.white)
+        setButtonStyle(button: fogToggle, bgColor: UIColor.white)
         addSubview(fogToggle)
         
         grayFog.frame = CGRect(x: 50, y: 180, width: 90, height: 35)
         grayFog.setTitle("Gray Fog", for: .normal)
-        customizeButton(button: grayFog, bgColor: UIColor.lightGray)
+        setButtonStyle(button: grayFog, bgColor: UIColor.lightGray)
         addSubview(grayFog)
         
         redFog.frame = CGRect(x: 50, y: 230, width: 90, height: 35)
         redFog.setTitle("Red Fog", for: .normal)
-        customizeButton(button: redFog, bgColor: UIColor.red)
+        setButtonStyle(button: redFog, bgColor: UIColor.red)
         addSubview(redFog)
         
         blueFog.frame = CGRect(x: 180, y: 180, width: 90, height: 35)
         blueFog.setTitle("Blue Fog", for: .normal)
-        customizeButton(button: blueFog, bgColor: UIColor.blue)
+        setButtonStyle(button: blueFog, bgColor: UIColor.blue)
         addSubview(blueFog)
         
         greenFog.frame = CGRect(x: 180, y: 230, width: 90, height: 35)
         greenFog.setTitle("Green Fog", for: .normal)
-        customizeButton(button: greenFog, bgColor: UIColor.green)
+        setButtonStyle(button: greenFog, bgColor: UIColor.green)
         addSubview(greenFog)
         
+        // Add button functions
         grayFog.addTarget(self, action: #selector(grayFogTapped), for: .touchUpInside)
         redFog.addTarget(self, action: #selector(redFogTapped), for: .touchUpInside)
         blueFog.addTarget(self, action: #selector(blueFogTapped), for: .touchUpInside)
         greenFog.addTarget(self, action: #selector(greenFogTapped), for: .touchUpInside)
         fogToggle.addTarget(self, action: #selector(fogToggleTapped), for: .touchUpInside)
+        
+        // Add slider functions
+        startDistanceSlider.addTarget(self, action: #selector(startDistanceChanged), for: .valueChanged)
+        endDistanceSlider.addTarget(self, action: #selector(endDistanceChanged), for: .valueChanged)
+        densitySlider.addTarget(self, action: #selector(densityChanged), for: .valueChanged)
     }
     
+    // button and slider action methods
     @objc func grayFogTapped() {
         fogUIColorChangeHandler?(.gray)
     }
@@ -93,11 +104,23 @@ class FogUIComponent: UIView {
         fogToggleHandler?()
     }
     
+    @objc func startDistanceChanged() {
+        startDistanceHandler?(startDistanceSlider.value)
+    }
+
+    @objc func endDistanceChanged() {
+        endDistanceHandler?(endDistanceSlider.value)
+    }
+
+    @objc func densityChanged() {
+        densityHandler?(densitySlider.value)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func customizeButton(button: UIButton, bgColor: UIColor) {
+    private func setButtonStyle(button: UIButton, bgColor: UIColor) {
         button.setTitleColor(UIColor.black, for: .normal)
         button.layer.cornerRadius = 10
         button.layer.borderWidth = 1

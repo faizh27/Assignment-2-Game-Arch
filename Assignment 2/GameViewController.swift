@@ -67,14 +67,29 @@ class GameViewController: UIViewController {
         // configure the view
         scnView.backgroundColor = UIColor.black
         
-        // add fog ui
+        // create fog UI
         fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
         fogUI?.backgroundColor = .lightGray
+        
+        // add color button handlers
         fogUI?.fogUIColorChangeHandler = { [weak self] color in
             self?.scene.fogColor = color
         }
+        
+        // add fog toggle handlers
         fogUI?.fogToggleHandler = { [weak self] in
             self?.toggleFog()
+        }
+        
+        // add fog value handlers
+        fogUI?.startDistanceHandler = { [weak self] value in
+            self?.scene.fogStartDistance = CGFloat(value)
+        }
+        fogUI?.endDistanceHandler = { [weak self] value in
+            self?.scene.fogEndDistance = CGFloat(value)
+        }
+        fogUI?.densityHandler = { [weak self] value in
+            self?.scene.fogDensityExponent = CGFloat(value)
         }
         view.addSubview(fogUI!)
         
