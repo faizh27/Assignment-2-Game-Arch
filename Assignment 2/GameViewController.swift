@@ -76,6 +76,7 @@ class GameViewController: UIViewController {
         // create fog UI
         fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
         fogUI?.backgroundColor = .lightGray
+        fogUI?.isHidden = true
         
         // add color button handlers
         fogUI?.fogUIColorChangeHandler = { [weak self] color in
@@ -104,6 +105,11 @@ class GameViewController: UIViewController {
             }
         }
         view.addSubview(fogUI!)
+        
+        // add single tap gesture -- toggle fog UI
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
+        singleTapGesture.numberOfTapsRequired = 1
+        scnView.addGestureRecognizer(singleTapGesture)
         
         // add double tap gesture -- camera orientation reset
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
@@ -222,6 +228,11 @@ class GameViewController: UIViewController {
             ambientLight?.light?.intensity = 100
             dayTime = false
         }
+    }
+    
+    @objc
+    func handleSingleTap(_ gestureRecognize: UITapGestureRecognizer) {
+        fogUI?.isHidden.toggle()
     }
     
     @objc
