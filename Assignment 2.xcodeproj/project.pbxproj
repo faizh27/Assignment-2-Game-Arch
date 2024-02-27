@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		046B312E2B8D6E3F0008DAC2 /* FogUIComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046B312D2B8D6E3F0008DAC2 /* FogUIComponent.swift */; };
 		0CF5B3272B8183AC003489DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3262B8183AC003489DC /* AppDelegate.swift */; };
 		0CF5B3292B8183AC003489DC /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CF5B3282B8183AC003489DC /* art.scnassets */; };
 		0CF5B32B2B8183AC003489DC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B32A2B8183AC003489DC /* GameViewController.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		046B312D2B8D6E3F0008DAC2 /* FogUIComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FogUIComponent.swift; sourceTree = "<group>"; };
 		0CF5B3232B8183AC003489DC /* Assignment 2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Assignment 2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CF5B3262B8183AC003489DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0CF5B3282B8183AC003489DC /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				0CF5B3262B8183AC003489DC /* AppDelegate.swift */,
+				046B312D2B8D6E3F0008DAC2 /* FogUIComponent.swift */,
 				0CF5B3282B8183AC003489DC /* art.scnassets */,
 				0CF5B32A2B8183AC003489DC /* GameViewController.swift */,
 				0CF5B32C2B8183AC003489DC /* Main.storyboard */,
@@ -274,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				046B312E2B8D6E3F0008DAC2 /* FogUIComponent.swift in Sources */,
 				0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */,
 				0CF5B32B2B8183AC003489DC /* GameViewController.swift in Sources */,
 				0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */,
