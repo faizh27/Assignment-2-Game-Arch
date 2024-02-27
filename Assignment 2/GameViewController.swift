@@ -26,9 +26,24 @@ class GameViewController: UIViewController {
     let defaultCamPos = SCNVector3(x: 0, y: 0, z: -3)
     let camRotScale: Float = 50
     let camMoveScale: Float = 50
+    
+    var fogUI: FogUIComponent?
+    var isFogEnabled = true
+    var savedFogStartDistance: CGFloat?
+    var savedFogEndDistance: CGFloat?
+    var savedFogDensity: CGFloat?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // init fog effects
+        scene.fogColor = UIColor.darkGray
+        scene.fogStartDistance = 0
+        scene.fogEndDistance = 2.5
+        scene.fogDensityExponent = 1.0
+        savedFogStartDistance = scene.fogStartDistance
+        savedFogEndDistance = scene.fogEndDistance
+        savedFogDensity = scene.fogDensityExponent
 
         cameraNode.camera = SCNCamera()
         cameraNode.name = "camera"
@@ -46,7 +61,6 @@ class GameViewController: UIViewController {
         lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
         scene.rootNode.addChildNode(lightNode)
 
-
         // retrieve the SCNView
         let scnView = self.view as! SCNView
         
@@ -58,6 +72,44 @@ class GameViewController: UIViewController {
         
         // configure the view
         scnView.backgroundColor = UIColor.black
+        
+        // create fog UI
+        fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
+        fogUI?.backgroundColor = .lightGray
+        fogUI?.isHidden = true
+        
+        // add color button handlers
+        fogUI?.fogUIColorChangeHandler = { [weak self] color in
+            self?.scene.fogColor = color
+        }
+        
+        // add fog toggle handlers
+        fogUI?.fogToggleHandler = { [weak self] in
+            self?.toggleFog()
+        }
+        
+        // add fog value handlers
+        fogUI?.startDistanceHandler = { [weak self] value in
+            if (self!.isFogEnabled) {
+                self?.scene.fogStartDistance = CGFloat(value)
+            }
+        }
+        fogUI?.endDistanceHandler = { [weak self] value in
+            if (self!.isFogEnabled) {
+                self?.scene.fogEndDistance = CGFloat(value)
+            }
+        }
+        fogUI?.densityHandler = { [weak self] value in
+            if (self!.isFogEnabled) {
+                self?.scene.fogDensityExponent = CGFloat(value)
+            }
+        }
+        view.addSubview(fogUI!)
+        
+        // add single tap gesture -- toggle fog UI
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
+        singleTapGesture.numberOfTapsRequired = 1
+        scnView.addGestureRecognizer(singleTapGesture)
         
         // add double tap gesture -- camera orientation reset
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
@@ -179,6 +231,11 @@ class GameViewController: UIViewController {
     }
     
     @objc
+    func handleSingleTap(_ gestureRecognize: UITapGestureRecognizer) {
+        fogUI?.isHidden.toggle()
+    }
+    
+    @objc
     func handleDoubleTap(_ gestureRecognize: UITapGestureRecognizer) {
         // reset cam's orientation and position to where it started
         cameraNode.position = defaultCamPos
@@ -217,6 +274,26 @@ class GameViewController: UIViewController {
             
         default:
             break
+        }
+    }
+    
+    private func toggleFog() {
+        isFogEnabled.toggle()
+        
+        if (isFogEnabled) {
+            scene.fogStartDistance = savedFogStartDistance!
+            scene.fogEndDistance = savedFogEndDistance!
+            scene.fogDensityExponent = savedFogDensity!
+        } else {
+            // save previous changes
+            savedFogStartDistance = scene.fogStartDistance
+            savedFogEndDistance = scene.fogEndDistance
+            savedFogDensity = scene.fogDensityExponent
+            
+            // turn off fog
+            scene.fogStartDistance = 0
+            scene.fogEndDistance = 0
+            scene.fogDensityExponent = 0
         }
     }
     
