@@ -19,6 +19,7 @@ class FogUIComponent: UIView {
     let greenFog = UIButton(type: .system)
     
     var fogUIColorChangeHandler: ((UIColor) -> Void)?
+    var fogToggleHandler: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -69,6 +70,7 @@ class FogUIComponent: UIView {
         redFog.addTarget(self, action: #selector(redFogTapped), for: .touchUpInside)
         blueFog.addTarget(self, action: #selector(blueFogTapped), for: .touchUpInside)
         greenFog.addTarget(self, action: #selector(greenFogTapped), for: .touchUpInside)
+        fogToggle.addTarget(self, action: #selector(fogToggleTapped), for: .touchUpInside)
     }
     
     @objc func grayFogTapped() {
@@ -85,6 +87,10 @@ class FogUIComponent: UIView {
     
     @objc func greenFogTapped() {
         fogUIColorChangeHandler?(.green)
+    }
+    
+    @objc func fogToggleTapped() {
+        fogToggleHandler?()
     }
     
     required init?(coder aDecoder: NSCoder) {

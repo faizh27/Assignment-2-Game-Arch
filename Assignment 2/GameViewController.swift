@@ -28,6 +28,7 @@ class GameViewController: UIViewController {
     let camMoveScale: Float = 50
     
     var fogUI: FogUIComponent?
+    var isFogEnabled = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,6 +72,9 @@ class GameViewController: UIViewController {
         fogUI?.backgroundColor = .lightGray
         fogUI?.fogUIColorChangeHandler = { [weak self] color in
             self?.scene.fogColor = color
+        }
+        fogUI?.fogToggleHandler = { [weak self] in
+            self?.toggleFog()
         }
         view.addSubview(fogUI!)
         
@@ -232,6 +236,20 @@ class GameViewController: UIViewController {
             
         default:
             break
+        }
+    }
+    
+    private func toggleFog() {
+        isFogEnabled.toggle()
+        
+        if (isFogEnabled) {
+            scene.fogStartDistance = 0
+            scene.fogEndDistance = 2.5
+            scene.fogDensityExponent = 1.0
+        } else {
+            scene.fogStartDistance = 0
+            scene.fogEndDistance = 0
+            scene.fogDensityExponent = 0
         }
     }
     
