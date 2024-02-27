@@ -32,6 +32,8 @@ class GameViewController: UIViewController {
     var savedFogStartDistance: CGFloat?
     var savedFogEndDistance: CGFloat?
     var savedFogDensity: CGFloat?
+    
+    var minimap: MinimapView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,6 +74,13 @@ class GameViewController: UIViewController {
         
         // configure the view
         scnView.backgroundColor = UIColor.black
+        
+        // Initialize and add the minimap view
+        minimap = MinimapView(frame: CGRect(x: scnView.frame.width - 220, y: scnView.frame.height - 400, width: 200, height: 200))
+        minimap?.backgroundColor = .lightGray
+        minimap?.isHidden = true
+        minimap?.alpha = 0.8
+        view.addSubview(minimap!)
         
         // create fog UI
         fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
@@ -239,6 +248,7 @@ class GameViewController: UIViewController {
     @objc
     func handleSingleTap(_ gestureRecognize: UITapGestureRecognizer) {
         fogUI?.isHidden.toggle()
+        minimap?.isHidden = true
     }
     
     @objc
@@ -286,7 +296,8 @@ class GameViewController: UIViewController {
     @objc
     private func handle2FingerDoubleTap(_ gestureRecognizr: UITapGestureRecognizer) {
         // Hold Alt key to use 2 finger/touch
-        print("2 finger double tap")
+        minimap?.isHidden.toggle()
+        fogUI?.isHidden = true
     }
     
     private func toggleFog() {
@@ -306,6 +317,12 @@ class GameViewController: UIViewController {
             scene.fogStartDistance = 0
             scene.fogEndDistance = 0
             scene.fogDensityExponent = 0
+        }
+    }
+    
+    private func updateMinimap() {
+        if (minimap?.isHidden == false) {
+            minimap?.setNeedsDisplay() // redraws the view
         }
     }
     
