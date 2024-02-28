@@ -162,38 +162,99 @@ class GameViewController: UIViewController {
         // Define the size of a single cell, padding, and wall thickness
         let cellSize: CGFloat = 1.0
         let wallThickness: CGFloat = 0.1
+        let wallPadding: CGFloat = 0.01
+        
+        // Load textures from URL
+        let texture1 = UIImage(named: "art.scnassets/texture1.jpeg")
+        let wallMaterialNone = SCNMaterial()
+        wallMaterialNone.diffuse.contents = texture1
+        let texture2 = UIImage(named: "art.scnassets/texture2.jpeg")
+        let wallMaterialLeft = SCNMaterial()
+        wallMaterialLeft.diffuse.contents = texture2
+        let texture3 = UIImage(named: "art.scnassets/texture3.jpeg")
+        let wallMaterialRight = SCNMaterial()
+        wallMaterialRight.diffuse.contents = texture3
+        let texture4 = UIImage(named: "art.scnassets/texture4.jpeg")
+        let wallMaterialBoth = SCNMaterial()
+        wallMaterialBoth.diffuse.contents = texture4
+        let texture5 = UIImage(named: "art.scnassets/ground.png")
+        let groundMaterial = SCNMaterial()
+        groundMaterial.diffuse.contents = texture5
         
         // Iterate through maze cells
         for row in 0..<maze.rows {
             for col in 0..<maze.cols {
                 let cell = maze.GetCell(row, col)
-                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), -0.5, CGFloat(row) * (cellSize))
+                let cellPosition = SCNVector3(CGFloat(col) * (cellSize), -0.4, CGFloat(row) * (cellSize))
                 
-                // Create a node for the cell
+                // Create a node for the cell and texture the floor
                 let cellGeometry = SCNBox(width: cellSize, height: 0.0, length: cellSize, chamferRadius: 0)
                 let cellNode = SCNNode(geometry: cellGeometry)
+                cellNode.geometry?.firstMaterial = groundMaterial
                 cellNode.position = cellPosition
                 mazeNode.addChildNode(cellNode)
                 
-                // Check walls and create them if present
+                // Check walls and create them if present with the loaded texture
                 if cell.northWallPresent {
                     let northWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-                    northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float((cellSize)/2))
+                    northWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z - Float(cellSize/2) + Float(wallPadding))
+                    // Determine relative left & right configuration and set wall textures accordingly
+                    switch (cell.eastWallPresent, cell.westWallPresent) {
+                    case (false, false):
+                        northWallNode.geometry?.firstMaterial = wallMaterialNone
+                    case (true, false):
+                        northWallNode.geometry?.firstMaterial = wallMaterialLeft
+                    case (false, true):
+                        northWallNode.geometry?.firstMaterial = wallMaterialRight
+                    case (true, true):
+                        northWallNode.geometry?.firstMaterial = wallMaterialBoth
+                    }
                     mazeNode.addChildNode(northWallNode)
                 }
                 if cell.southWallPresent {
                     let southWallNode = SCNNode(geometry: SCNBox(width: cellSize, height: 1, length: wallThickness, chamferRadius: 0))
-                    southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float((cellSize))/2)
+                    southWallNode.position = SCNVector3(cellPosition.x, Float(wallThickness)/2, cellPosition.z + Float(cellSize/2) - Float(wallPadding))
+                    switch (cell.westWallPresent, cell.eastWallPresent) {
+                    case (false, false):
+                        southWallNode.geometry?.firstMaterial = wallMaterialNone
+                    case (true, false):
+                        southWallNode.geometry?.firstMaterial = wallMaterialLeft
+                    case (false, true):
+                        southWallNode.geometry?.firstMaterial = wallMaterialRight
+                    case (true, true):
+                        southWallNode.geometry?.firstMaterial = wallMaterialBoth
+                    }
                     mazeNode.addChildNode(southWallNode)
                 }
                 if cell.eastWallPresent {
                     let eastWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-                    eastWallNode.position = SCNVector3(cellPosition.x + Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
+                    eastWallNode.position = SCNVector3(cellPosition.x + Float(cellSize/2) - Float(wallPadding), Float(wallThickness)/2, cellPosition.z)
+                    switch (cell.southWallPresent, cell.northWallPresent) {
+                    case (false, false):
+                        eastWallNode.geometry?.firstMaterial = wallMaterialNone
+                    case (true, false):
+                        eastWallNode.geometry?.firstMaterial = wallMaterialLeft
+                    case (false, true):
+                        eastWallNode.geometry?.firstMaterial = wallMaterialRight
+                    case (true, true):
+                        eastWallNode.geometry?.firstMaterial = wallMaterialBoth
+                    }
                     mazeNode.addChildNode(eastWallNode)
                 }
                 if cell.westWallPresent {
                     let westWallNode = SCNNode(geometry: SCNBox(width: wallThickness, height: 1, length: cellSize, chamferRadius: 0))
-                    westWallNode.position = SCNVector3(cellPosition.x - Float((cellSize))/2, Float(wallThickness)/2, cellPosition.z)
+                    westWallNode.geometry?.firstMaterial = wallMaterialBoth
+                    westWallNode.position = SCNVector3(cellPosition.x - Float(cellSize/2) + Float(wallPadding), Float(wallThickness)/2, cellPosition.z)
+                    switch (cell.northWallPresent, cell.southWallPresent) {
+                    case (false, false):
+                        westWallNode.geometry?.firstMaterial = wallMaterialNone
+                    case (true, false):
+                        westWallNode.geometry?.firstMaterial = wallMaterialLeft
+                    case (false, true):
+                        westWallNode.geometry?.firstMaterial = wallMaterialRight
+                    case (true, true):
+                        westWallNode.geometry?.firstMaterial = wallMaterialBoth
+                    }
                     mazeNode.addChildNode(westWallNode)
                 }
             }
@@ -301,7 +362,7 @@ class GameViewController: UIViewController {
     func addCube() {
         let theCube = SCNNode(geometry: SCNBox(width: 0.3, height: 0.3, length: 0.3, chamferRadius: 0)) // Create a object node of box shape with width of 1 and height of 1
         theCube.name = "The Cube" // Name the node so we can reference it later
-        theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "crate.jpg") // Diffuse the crate image material across the whole cube
+        theCube.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/crate.jpg") // Diffuse the crate image material across the whole cube
         theCube.position = SCNVector3(0, 0, 0) // Put the cube at position (0, 0, 0)
         scene.rootNode.addChildNode(theCube) // Add the cube node to the scene
     }
