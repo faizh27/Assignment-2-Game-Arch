@@ -20,7 +20,7 @@ class GameViewController: UIViewController {
     var ambientLightIntensity = 500.0
     // create a new scene
     let scene = SCNScene(named: "art.scnassets/main.scn")!
-    let mazeSize = 3
+    let mazeSize = 10
     
     let defaultCamRot = SCNVector3(x: 0, y: 3.14159265, z: 0)
     let defaultCamPos = SCNVector3(x: 0, y: 0, z: -3)
@@ -76,21 +76,6 @@ class GameViewController: UIViewController {
         
         // configure the view
         scnView.backgroundColor = UIColor.black
-        
-//        // Initialize and add the minimap view
-//        minimap = MinimapView(frame: CGRect(x: scnView.frame.width - 325, y: scnView.frame.height - 425, width: 250, height: 250))
-//        minimap?.backgroundColor = .lightGray
-//        minimap?.isHidden = true
-//        minimap?.alpha = 0.8
-//        view.addSubview(minimap!)
-        
-        //var maze = Maze(Int32(mazeSize), Int32(mazeSize))
-        //maze.Create()
-        
-//        var maze = Maze(Int32(mazeSize), Int32(mazeSize))
-        
-        
-
         
         // create fog UI
         fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
@@ -273,6 +258,7 @@ class GameViewController: UIViewController {
         // reset cam's orientation and position to where it started
         cameraNode.position = defaultCamPos
         cameraNode.eulerAngles = defaultCamRot
+        minimap?.resetPos()
     }
     
     @objc
@@ -301,6 +287,8 @@ class GameViewController: UIViewController {
             // Create and assign new position
             let newPos = SCNVector3(x: cameraPos.x + cameraDirection.x * move, y: cameraPos.y + cameraDirection.y * move, z: cameraPos.z + cameraDirection.z * move)
             cameraNode.position = newPos
+            
+            minimap?.updatePlayer(position: cameraNode.position, rotation: cameraNode.eulerAngles)
 
             // essentially resets the origin point of touch to align with the moving finger
             gestureRecognize.setTranslation(CGPointZero, in: scnView)
@@ -336,12 +324,6 @@ class GameViewController: UIViewController {
             scene.fogDensityExponent = 0
         }
     }
-    
-//    private func updateMinimap() {
-//        if (minimap?.isHidden == false) {
-//            minimap?.setNeedsDisplay() // redraws the view
-//        }
-//    }
     
     // Create Cube
     func addCube() {

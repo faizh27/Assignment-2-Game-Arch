@@ -42,12 +42,12 @@ class Minimap: SKScene {
         // Create a triangle shape
         let path = CGMutablePath()
         path.move(to: CGPoint(x: -5, y: -5))
-        path.addLine(to: CGPoint(x: 0, y: 5))
+        path.addLine(to: CGPoint(x: 0, y: 10))
         path.addLine(to: CGPoint(x: 5, y:-5))
         path.closeSubpath()
         
         playerNode = SKShapeNode(path: path)
-        playerNode.fillColor = .white
+        playerNode.fillColor = .red
         playerNode.strokeColor = .clear
         playerNode.zRotation += CGFloat.pi
         
@@ -68,44 +68,6 @@ class Minimap: SKScene {
         playerNode.zRotation = CGFloat.pi
     }
     
-    func moveTriangle(currentForward: Int, swipeDirection: UISwipeGestureRecognizer.Direction) {
-        // Move the triangle to a new position
-        var newPosition = playerNode.position
-        var backwardPosition = playerNode.position
-        if cardDirection[currentForward] == "north" {
-            newPosition.y += cellSize.height
-            //currentY -= 1
-            backwardPosition.y -= cellSize.height
-        } else if cardDirection[currentForward] == "east" {
-            newPosition.x -= cellSize.width
-            //currentX -= 1
-            backwardPosition.x += cellSize.width
-        } else if cardDirection[currentForward] == "south" {
-            newPosition.y -= cellSize.height
-            //currentY += 1
-            backwardPosition.y += cellSize.height
-        } else if cardDirection[currentForward] == "west" {
-            newPosition.x += cellSize.width
-            //currentX += 1
-            backwardPosition.x -= cellSize.width
-        }
-        //newPosition = gridCoordinates["\(currentX),\(currentY)"]!
-        switch swipeDirection {
-        case .up:
-            playerNode?.run(SKAction.move(to: backwardPosition, duration: 1.0))
-        case .down:
-            playerNode?.run(SKAction.move(to: newPosition, duration: 1.0))
-        case .left:
-            playerNode?.run(SKAction.rotate(byAngle: -CGFloat.pi / 2, duration: 1.0))
-        case .right:
-            playerNode?.run(SKAction.rotate(byAngle: CGFloat.pi / 2, duration: 1.0))
-        default:
-            break
-        }
-    }
-    
-    
-    // idk I can't believe jun did all this (with permissio)
     func createGridCoordinates() {
         let startX = (UIScreen.main.bounds.size.width - minimapWidth) / 2
         let startY = (UIScreen.main.bounds.size.height - minimapHeight) / 2
@@ -175,5 +137,21 @@ class Minimap: SKScene {
             westWall.color = .black
             addChild(westWall)
         }
+    }
+    
+    public func updatePlayer(position: SCNVector3, rotation: SCNVector3) {
+        
+        let col = Int(round(position.x))
+        let row = Int(round(position.z))
+        
+        print("row: \(row), Z: \(position.z)")
+        print("col: \(col), X:, \(position.x)")
+        
+        if (row >= 0 && row < maze.rows && col >= 0 && col < maze.cols) {
+            playerNode.position = gridCoordinates["\(col),\(row)"]!
+            playerNode.zRotation = CGFloat(rotation.y)
+        }
+        
+        
     }
 }
