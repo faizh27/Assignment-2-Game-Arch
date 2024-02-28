@@ -20,7 +20,7 @@ class GameViewController: UIViewController {
     var ambientLightIntensity = 500.0
     // create a new scene
     let scene = SCNScene(named: "art.scnassets/main.scn")!
-    let mazeSize = 10
+    let mazeSize = 3
     
     let defaultCamRot = SCNVector3(x: 0, y: 3.14159265, z: 0)
     let defaultCamPos = SCNVector3(x: 0, y: 0, z: -3)
@@ -33,7 +33,9 @@ class GameViewController: UIViewController {
     var savedFogEndDistance: CGFloat?
     var savedFogDensity: CGFloat?
     
-    var minimap: MinimapView?
+    var maze = Maze(0, 0)
+    
+    var minimap: Minimap?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,12 +77,20 @@ class GameViewController: UIViewController {
         // configure the view
         scnView.backgroundColor = UIColor.black
         
-        // Initialize and add the minimap view
-        minimap = MinimapView(frame: CGRect(x: scnView.frame.width - 220, y: scnView.frame.height - 400, width: 200, height: 200))
-        minimap?.backgroundColor = .lightGray
-        minimap?.isHidden = true
-        minimap?.alpha = 0.8
-        view.addSubview(minimap!)
+//        // Initialize and add the minimap view
+//        minimap = MinimapView(frame: CGRect(x: scnView.frame.width - 325, y: scnView.frame.height - 425, width: 250, height: 250))
+//        minimap?.backgroundColor = .lightGray
+//        minimap?.isHidden = true
+//        minimap?.alpha = 0.8
+//        view.addSubview(minimap!)
+        
+        //var maze = Maze(Int32(mazeSize), Int32(mazeSize))
+        //maze.Create()
+        
+//        var maze = Maze(Int32(mazeSize), Int32(mazeSize))
+        
+        
+
         
         // create fog UI
         fogUI = FogUIComponent(frame: CGRect(x: 20, y: 70, width: 320, height: 280))
@@ -135,22 +145,24 @@ class GameViewController: UIViewController {
         twoFingerDoubleTapGesture.numberOfTouchesRequired = 2
         scnView.addGestureRecognizer(twoFingerDoubleTapGesture)
         
+        //Flashlight toggle
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
         flashlightButton.setTitleColor(.white, for: .normal) // Set text color to white
         flashlightButton.layer.cornerRadius = 10 // Set corner radius to make edges rounded
         flashlightButton.layer.borderWidth = 1 // Optionally, you can add a border width
         flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
-        flashlightButton.frame = CGRect(x: 20, y: 700, width: 100, height: 30)
+        flashlightButton.frame = CGRect(x: 75, y: 700, width: 100, height: 30)
         self.view.addSubview(flashlightButton)
         
+        //Daytime Toggle
         let dayTimeToggleButton = UIButton(type: .system)
         dayTimeToggleButton.setTitle("Day/Night", for: .normal)
         dayTimeToggleButton.setTitleColor(.white, for: .normal) // Set text color to white
         dayTimeToggleButton.layer.cornerRadius = 10 // Set corner radius to make edges rounded
         dayTimeToggleButton.layer.borderWidth = 1 // Optionally, you can add a border width
         dayTimeToggleButton.addTarget(self, action: #selector(dayNightToggle), for: .touchUpInside)
-        dayTimeToggleButton.frame = CGRect(x: 130, y: 700, width: 100, height: 30)
+        dayTimeToggleButton.frame = CGRect(x: 175, y: 700, width: 100, height: 30)
         self.view.addSubview(dayTimeToggleButton)
         
         flashlightButton.backgroundColor = UIColor.blue
@@ -158,6 +170,11 @@ class GameViewController: UIViewController {
         
         // Create the maze node
         let mazeNode = createMazeNode()
+        
+        minimap = Minimap(size: self.view.bounds.size, maze: maze)
+                minimap?.isHidden = true
+                scnView.overlaySKScene = minimap
+        
 
         // Add the maze node to the scene
         scene.rootNode.addChildNode(mazeNode)
@@ -170,7 +187,7 @@ class GameViewController: UIViewController {
     
     func createMazeNode() -> SCNNode {
         let mazeNode = SCNNode()
-        
+    
         var maze = Maze(Int32(mazeSize), Int32(mazeSize))
         maze.Create()
         
@@ -213,7 +230,7 @@ class GameViewController: UIViewController {
                 }
             }
         }
-        
+        self.maze = maze
         return mazeNode
     }
     
@@ -320,11 +337,11 @@ class GameViewController: UIViewController {
         }
     }
     
-    private func updateMinimap() {
-        if (minimap?.isHidden == false) {
-            minimap?.setNeedsDisplay() // redraws the view
-        }
-    }
+//    private func updateMinimap() {
+//        if (minimap?.isHidden == false) {
+//            minimap?.setNeedsDisplay() // redraws the view
+//        }
+//    }
     
     // Create Cube
     func addCube() {
