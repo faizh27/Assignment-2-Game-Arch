@@ -23,6 +23,7 @@ class MazeCell : SCNNode {
 
     var cellSize : CGFloat = 1
     
+   let imageNames = ["art.scnassets/blue.jpeg", "art.scnassets/brick.jpeg", "art.scnassets/dirt.jpeg", "art.scnassets/wood.jpeg"]
     init(xPos: Float, zPos: Float, northWall: Bool, southWall: Bool, eastWall: Bool, westWall: Bool) {
         self.xPos = xPos
         self.zPos = zPos
@@ -32,7 +33,14 @@ class MazeCell : SCNNode {
         // Create walls based on the presence flags
         if northWall {
             let wallGeometry = SCNBox(width: 0.05, height: 1.0, length: 1.0, chamferRadius: 0.0)
-            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/blue.jpeg")
+            
+            var binaryNumber = 0b00
+            // does left wall exist?
+            binaryNumber |= ((eastWall ? 1 : 0) << 1)
+            // does right wall exist?
+            binaryNumber |= ((westWall ? 1 : 0) << 0)
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: imageNames[binaryNumber])
+            
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(0.475, 0.5, 0) // Adjust position to align with cell
             wallNode.castsShadow = true
@@ -41,7 +49,14 @@ class MazeCell : SCNNode {
         if southWall {
 
             let wallGeometry = SCNBox(width: 0.05, height: 1.0, length: 1.0, chamferRadius: 0.0)
-            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/brick.jpeg")
+            
+            var binaryNumber = 0b00
+            // does left wall exist?
+            binaryNumber |= ((westWall ? 1 : 0) << 1)
+            // does right wall exist?
+            binaryNumber |= ((eastWall ? 1 : 0) << 0)
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: imageNames[binaryNumber])
+            
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(-0.475, 0.5, 0) // Adjust position to align with cell
             wallNode.castsShadow = true
@@ -50,7 +65,14 @@ class MazeCell : SCNNode {
         if eastWall {
 
             let wallGeometry = SCNBox(width: 1.0, height: 1.0, length: 0.05, chamferRadius: 0.0)
-            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/dirt.jpeg")
+            
+            var binaryNumber = 0b00
+            // does left wall exist?
+            binaryNumber |= ((southWall ? 1 : 0) << 1)
+            // does right wall exist?
+            binaryNumber |= ((northWall ? 1 : 0) << 0)
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: imageNames[binaryNumber])
+            
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(0, 0.5, 0.475) // Adjust position to align with cell
             wallNode.castsShadow = true
@@ -59,7 +81,14 @@ class MazeCell : SCNNode {
         if westWall {
 
             let wallGeometry = SCNBox(width: 1.0, height: 1.0, length: 0.05, chamferRadius: 0.0)
-            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/wood.jpeg")
+            
+            var binaryNumber = 0b00
+            // does left wall exist?
+            binaryNumber |= ((northWall ? 1 : 0) << 1)
+            // does right wall exist?
+            binaryNumber |= ((southWall ? 1 : 0) << 0)
+            wallGeometry.firstMaterial?.diffuse.contents = UIImage(named: imageNames[binaryNumber])
+            
             let wallNode = SCNNode(geometry: wallGeometry)
             wallNode.position = SCNVector3(0, 0.5, -0.475) // Adjust position to align with cell
             wallNode.castsShadow = true

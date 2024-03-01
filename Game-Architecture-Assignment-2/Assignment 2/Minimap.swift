@@ -42,14 +42,14 @@ class Minimap: SKScene {
         // Create a triangle shape
         let path = CGMutablePath()
         path.move(to: CGPoint(x: -5, y: -5))
-        path.addLine(to: CGPoint(x: 0, y: 5))
+        path.addLine(to: CGPoint(x: 0, y: 10))
         path.addLine(to: CGPoint(x: 5, y:-5))
         path.closeSubpath()
         
         playerNode = SKShapeNode(path: path)
         playerNode.fillColor = .white
         playerNode.strokeColor = .clear
-        playerNode.zRotation += CGFloat.pi
+        //playerNode.zRotation += CGFloat.pi
         
         // Position the triangle at a specific point
         playerNode.position = gridCoordinates["\(0),\(0)"]!
@@ -59,38 +59,25 @@ class Minimap: SKScene {
     }
 
     var cardDirection: [String] = ["north", "east", "south", "west"]
+    var currentX = 0
+    var currentY = 0
     
-    func moveTriangle(currentForward: Int, swipeDirection: UISwipeGestureRecognizer.Direction) {
-        // Move the triangle to a new position
-        var newPosition = playerNode.position
-        var backwardPosition = playerNode.position
-        if cardDirection[currentForward] == "north" {
-            newPosition.y += cellSize.height
-            backwardPosition.y -= cellSize.height
-        } else if cardDirection[currentForward] == "east" {
-            newPosition.x -= cellSize.width
-            backwardPosition.x += cellSize.width
-        } else if cardDirection[currentForward] == "south" {
-            newPosition.y -= cellSize.height
-            backwardPosition.y += cellSize.height
-        } else if cardDirection[currentForward] == "west" {
-            newPosition.x += cellSize.width
-            backwardPosition.x -= cellSize.width
-        }
-        switch swipeDirection {
-        case .up:
-            playerNode?.run(SKAction.move(to: backwardPosition, duration: 1.0))
-        case .down:
-            playerNode?.run(SKAction.move(to: newPosition, duration: 1.0))
-        case .left:
-            playerNode?.run(SKAction.rotate(byAngle: -CGFloat.pi / 2, duration: 1.0))
-        case .right:
-            playerNode?.run(SKAction.rotate(byAngle: CGFloat.pi / 2, duration: 1.0))
-        default:
-            break
-        }
+    @objc
+    func resetPos() {
+        playerNode.position = gridCoordinates["\(0),\(0)"]!
+        playerNode.zRotation = CGFloat.pi
     }
     
+    func movePlayer(playerX: Float, playerZ: Float, playerRot: Float) {
+        let x = Int(round(playerZ))
+        let y = Int(round(playerX)) * -1
+        print("X: \(x), Y: \(y), Rot: \(playerRot)")
+        if let newPosition = gridCoordinates["\(x),\(y)"] {
+            let moveAction = SKAction.move(to: newPosition, duration: 0.5) // Adjust duration as needed
+            playerNode.run(moveAction)
+        }
+        playerNode.zRotation = CGFloat(playerRot) + CGFloat.pi
+    }
     
     // idk I can't believe I did all this
     func createGridCoordinates() {
@@ -115,10 +102,10 @@ class Minimap: SKScene {
             reverseRows -= 1
         }
         
-        print("")
-        for (key, value) in gridCoordinates {
-            print("Key:", key, "Value:", value)
-        }
+//        print("")
+//        for (key, value) in gridCoordinates {
+//            print("Key:", key, "Value:", value)
+//        }
     }
     
     func createMiniMap() {

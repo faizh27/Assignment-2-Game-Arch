@@ -33,7 +33,7 @@ class GameViewController: UIViewController {
         // create maze
         let mazeNode = SCNNode() // Create a new SCNNode instance
         mazeNode.name = "Maze" // Set a name for the node if needed
-        var maze = Maze(5, 10)
+        var maze = Maze(10, 10)
         maze.Create()
         //maze.CreateWithSeed(1)
         //print("0: \(maze.GetCell(0, 0))")
@@ -169,7 +169,7 @@ class GameViewController: UIViewController {
     
     @objc func sliderValueChanged(_ sender: UISlider) {
         let value = CGFloat(sender.value)
-        print("\(sender.tag) value = \(value)")
+        //print("\(sender.tag) value = \(value)")
         if sender.tag == 0 {
             scene.fogStartDistance = value
         } else if sender.tag == 1 {
@@ -191,13 +191,11 @@ class GameViewController: UIViewController {
     
     // Button action
     @objc func toggleFlashLight() {
-        print("Button tapped!")
         flashLightNode?.isHidden.toggle()
     }
     
     var isDay = false
     @objc func toggleDayLight() {
-        print("Button tapped!")
         let targetIntensity: CGFloat = isDay ? 700 : 0
         let duration: TimeInterval = 1.0 // Adjust the duration as needed
 
@@ -235,6 +233,8 @@ class GameViewController: UIViewController {
     var rotAngle = 0.0
     @MainActor
     func reanimate() {
+        let playerT = playerNode?.position
+        minimap?.movePlayer(playerX: playerT?.x ?? 0, playerZ: playerT?.z ?? 0, playerRot: playerNode?.eulerAngles.y ?? 0)
         let theCube = scene.rootNode.childNode(withName: "The Cube", recursively: true) // Get the cube object by its name (This is where line 69 comes in)
         rotAngle += 0.05 // Increment rotation of the cube by 0.0005 radians
         // Keep the rotation angle in the range of 0 and pi
@@ -264,6 +264,7 @@ class GameViewController: UIViewController {
         playerNode?.position = SCNVector3(0, 0.5, 0)
         playerNode?.rotation = SCNVector4(0, 0, 0, 0)
         currentForward = 2
+        minimap?.resetPos()
     }
     
     // holy overengineering
@@ -284,20 +285,16 @@ class GameViewController: UIViewController {
             switch gestureRecognizer.direction {
             case .up:
                 //print("Swiped up!")
-                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .up)
                 playerNode?.runAction(SCNAction.move(by: backwardVector, duration: 1))
             case .down:
                 //print("Swiped down!")
-                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .down)
                 playerNode?.runAction(SCNAction.move(by: forwardVector, duration: 1))
             case .left:
                 //print("Swiped left!")
-                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .left)
                 playerNode?.runAction(SCNAction.rotateBy(x: 0, y: -.pi / 2, z: 0, duration: 1))
                 currentForward = (currentForward + cardDirection.count - 1) % cardDirection.count
             case .right:
                 //print("Swiped right!")
-                minimap?.moveTriangle(currentForward: currentForward, swipeDirection: .right)
                 playerNode?.runAction(SCNAction.rotateBy(x: 0, y: .pi / 2, z: 0, duration: 1))
                 currentForward = (currentForward + 1) % cardDirection.count
             default:
