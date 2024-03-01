@@ -23,7 +23,7 @@ DisjointSet::DisjointSet(int setSize)
 
 DisjointSet::~DisjointSet()
 {
-	delete [] setArray;
+	//delete [] setArray;
 }
 
 void DisjointSet::UnionSets(int s1, int s2)

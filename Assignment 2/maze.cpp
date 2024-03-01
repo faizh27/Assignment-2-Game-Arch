@@ -40,10 +40,10 @@ Maze::Maze(int rows, int cols)
 
 Maze::~Maze()
 {
-	delete mazeSet;
-	for (int i=0; i<rows; i++)
-		free(maze[i]);
-	free(maze);
+//	delete mazeSet;
+//	for (int i=0; i<rows; i++)
+//		free(maze[i]);
+//	free(maze);
 }
 
 void Maze::Create()

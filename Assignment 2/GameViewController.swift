@@ -32,6 +32,10 @@ class GameViewController: UIViewController {
     var savedFogStartDistance: CGFloat?
     var savedFogEndDistance: CGFloat?
     var savedFogDensity: CGFloat?
+    
+    var maze = Maze(0, 0)
+    
+    var minimap: Minimap?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -120,22 +124,30 @@ class GameViewController: UIViewController {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleDrag(_:)))
         scnView.addGestureRecognizer(panGesture)
         
+        // add 2 finger double tap gesture
+        let twoFingerDoubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handle2FingerDoubleTap(_:)))
+        twoFingerDoubleTapGesture.numberOfTapsRequired = 2
+        twoFingerDoubleTapGesture.numberOfTouchesRequired = 2
+        scnView.addGestureRecognizer(twoFingerDoubleTapGesture)
+        
+        //Flashlight toggle
         let flashlightButton = UIButton(type: .system)
         flashlightButton.setTitle("Flashlight", for: .normal)
         flashlightButton.setTitleColor(.white, for: .normal) // Set text color to white
         flashlightButton.layer.cornerRadius = 10 // Set corner radius to make edges rounded
         flashlightButton.layer.borderWidth = 1 // Optionally, you can add a border width
         flashlightButton.addTarget(self, action: #selector(flashlightToggle), for: .touchUpInside)
-        flashlightButton.frame = CGRect(x: 20, y: 700, width: 100, height: 30)
+        flashlightButton.frame = CGRect(x: 75, y: 700, width: 100, height: 30)
         self.view.addSubview(flashlightButton)
         
+        //Daytime Toggle
         let dayTimeToggleButton = UIButton(type: .system)
         dayTimeToggleButton.setTitle("Day/Night", for: .normal)
         dayTimeToggleButton.setTitleColor(.white, for: .normal) // Set text color to white
         dayTimeToggleButton.layer.cornerRadius = 10 // Set corner radius to make edges rounded
         dayTimeToggleButton.layer.borderWidth = 1 // Optionally, you can add a border width
         dayTimeToggleButton.addTarget(self, action: #selector(dayNightToggle), for: .touchUpInside)
-        dayTimeToggleButton.frame = CGRect(x: 130, y: 700, width: 100, height: 30)
+        dayTimeToggleButton.frame = CGRect(x: 175, y: 700, width: 100, height: 30)
         self.view.addSubview(dayTimeToggleButton)
         
         flashlightButton.backgroundColor = UIColor.blue
@@ -143,6 +155,11 @@ class GameViewController: UIViewController {
         
         // Create the maze node
         let mazeNode = createMazeNode()
+        
+        minimap = Minimap(size: self.view.bounds.size, maze: maze)
+                minimap?.isHidden = true
+                scnView.overlaySKScene = minimap
+        
 
         // Add the maze node to the scene
         scene.rootNode.addChildNode(mazeNode)
@@ -155,7 +172,7 @@ class GameViewController: UIViewController {
     
     func createMazeNode() -> SCNNode {
         let mazeNode = SCNNode()
-        
+    
         var maze = Maze(Int32(mazeSize), Int32(mazeSize))
         maze.Create()
         
@@ -259,7 +276,7 @@ class GameViewController: UIViewController {
                 }
             }
         }
-        
+        self.maze = maze
         return mazeNode
     }
     
@@ -294,6 +311,7 @@ class GameViewController: UIViewController {
     @objc
     func handleSingleTap(_ gestureRecognize: UITapGestureRecognizer) {
         fogUI?.isHidden.toggle()
+        minimap?.isHidden = true
     }
     
     @objc
@@ -301,6 +319,7 @@ class GameViewController: UIViewController {
         // reset cam's orientation and position to where it started
         cameraNode.position = defaultCamPos
         cameraNode.eulerAngles = defaultCamRot
+        minimap?.resetPos()
     }
     
     @objc
@@ -329,6 +348,8 @@ class GameViewController: UIViewController {
             // Create and assign new position
             let newPos = SCNVector3(x: cameraPos.x + cameraDirection.x * move, y: cameraPos.y + cameraDirection.y * move, z: cameraPos.z + cameraDirection.z * move)
             cameraNode.position = newPos
+            
+            minimap?.updatePlayer(position: cameraNode.position, rotation: cameraNode.eulerAngles)
 
             // essentially resets the origin point of touch to align with the moving finger
             gestureRecognize.setTranslation(CGPointZero, in: scnView)
@@ -336,6 +357,13 @@ class GameViewController: UIViewController {
         default:
             break
         }
+    }
+    
+    @objc
+    private func handle2FingerDoubleTap(_ gestureRecognizr: UITapGestureRecognizer) {
+        // Hold Alt key to use 2 finger/touch
+        minimap?.isHidden.toggle()
+        fogUI?.isHidden = true
     }
     
     private func toggleFog() {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		046B312E2B8D6E3F0008DAC2 /* FogUIComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046B312D2B8D6E3F0008DAC2 /* FogUIComponent.swift */; };
+		046B31302B8D71E10008DAC2 /* MiniMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046B312F2B8D71E10008DAC2 /* MiniMapView.swift */; };
 		0CF5B3272B8183AC003489DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3262B8183AC003489DC /* AppDelegate.swift */; };
 		0CF5B3292B8183AC003489DC /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CF5B3282B8183AC003489DC /* art.scnassets */; };
 		0CF5B32B2B8183AC003489DC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B32A2B8183AC003489DC /* GameViewController.swift */; };
@@ -19,6 +20,8 @@
 		0CF5B3492B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3482B8183AE003489DC /* Assignment_2UITestsLaunchTests.swift */; };
 		0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3562B8183E2003489DC /* DisjointSet.cpp */; };
 		0CF5B35B2B8183E2003489DC /* maze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5B3592B8183E2003489DC /* maze.cpp */; };
+		4E224E102B8559B100D2C342 /* crate.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E224E0F2B8559B100D2C342 /* crate.jpg */; };
+		4E6A30522B8FDDC50055239B /* Minimap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E6A30512B8FDDC50055239B /* Minimap.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		046B312D2B8D6E3F0008DAC2 /* FogUIComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FogUIComponent.swift; sourceTree = "<group>"; };
+		046B312F2B8D71E10008DAC2 /* MiniMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniMapView.swift; sourceTree = "<group>"; };
 		0CF5B3232B8183AC003489DC /* Assignment 2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Assignment 2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CF5B3262B8183AC003489DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0CF5B3282B8183AC003489DC /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -57,6 +61,8 @@
 		0CF5B3572B8183E2003489DC /* maze.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = maze.h; sourceTree = "<group>"; };
 		0CF5B3582B8183E2003489DC /* DisjointSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisjointSet.h; sourceTree = "<group>"; };
 		0CF5B3592B8183E2003489DC /* maze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = maze.cpp; sourceTree = "<group>"; };
+		4E224E0F2B8559B100D2C342 /* crate.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = crate.jpg; sourceTree = "<group>"; };
+		4E6A30512B8FDDC50055239B /* Minimap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Minimap.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +125,9 @@
 				0CF5B3592B8183E2003489DC /* maze.cpp */,
 				0CF5B3572B8183E2003489DC /* maze.h */,
 				0CF5B3552B8183E1003489DC /* Assignment 2-Bridging-Header.h */,
+				4E224E0F2B8559B100D2C342 /* crate.jpg */,
+				046B312F2B8D71E10008DAC2 /* MiniMapView.swift */,
+				4E6A30512B8FDDC50055239B /* Minimap.swift */,
 			);
 			path = "Assignment 2";
 			sourceTree = "<group>";
@@ -273,6 +282,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				046B31302B8D71E10008DAC2 /* MiniMapView.swift in Sources */,
+				4E6A30522B8FDDC50055239B /* Minimap.swift in Sources */,
 				046B312E2B8D6E3F0008DAC2 /* FogUIComponent.swift in Sources */,
 				0CF5B35A2B8183E2003489DC /* DisjointSet.cpp in Sources */,
 				0CF5B32B2B8183AC003489DC /* GameViewController.swift in Sources */,
