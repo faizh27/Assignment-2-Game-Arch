@@ -420,7 +420,7 @@ class GameViewController: UIViewController {
         flashlight.light = SCNLight() // Add a new light to the lamp
         flashlight.light!.type = .directional // Set the light type to directional
         flashlight.light!.color = UIColor.orange // Set the light color to orange
-        flashlight.light!.intensity = flashLightIntensity // Set the light intensity to 2000 lumins (1000 is default)
+        flashlight.light!.intensity = flashLightIntensity
         cameraNode.addChildNode(flashlight) // Add the flashlight node to the scene as a child of the camera
     }
     
