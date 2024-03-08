@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		FBD1607D2B9BC4F000420767 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD1607C2B9BC4F000420767 /* AppDelegate.swift */; };
 		FBD1607F2B9BC4F000420767 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = FBD1607E2B9BC4F000420767 /* art.scnassets */; };
-		FBD160812B9BC4F000420767 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD160802B9BC4F000420767 /* GameViewController.swift */; };
+		FBD160812B9BC4F000420767 /* GameViewControllerShip.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD160802B9BC4F000420767 /* GameViewControllerShip.swift */; };
 		FBD160842B9BC4F000420767 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FBD160822B9BC4F000420767 /* Main.storyboard */; };
 		FBD160862B9BC4F100420767 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FBD160852B9BC4F100420767 /* Assets.xcassets */; };
 		FBD160892B9BC4F100420767 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FBD160872B9BC4F100420767 /* LaunchScreen.storyboard */; };
@@ -64,6 +64,7 @@
 		FBD161D82B9BC7D500420767 /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBD161AA2B9BC7D500420767 /* b2Collision.cpp */; };
 		FBD161DE2B9BC7EB00420767 /* CBox2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = FBD161DB2B9BC7EB00420767 /* CBox2D.mm */; };
 		FBD161DF2B9BC7EB00420767 /* Lab10.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD161DC2B9BC7EB00420767 /* Lab10.swift */; };
+		FBD161E52B9BCE6D00420767 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD161E42B9BCE6D00420767 /* GameViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,7 +88,7 @@
 		FBD160792B9BC4F000420767 /* Game-Architecture-Assignment-3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Game-Architecture-Assignment-3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBD1607C2B9BC4F000420767 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FBD1607E2B9BC4F000420767 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		FBD160802B9BC4F000420767 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		FBD160802B9BC4F000420767 /* GameViewControllerShip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewControllerShip.swift; sourceTree = "<group>"; };
 		FBD160832B9BC4F000420767 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FBD160852B9BC4F100420767 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FBD160882B9BC4F100420767 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -193,6 +194,7 @@
 		FBD161DB2B9BC7EB00420767 /* CBox2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CBox2D.mm; sourceTree = "<group>"; };
 		FBD161DC2B9BC7EB00420767 /* Lab10.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lab10.swift; sourceTree = "<group>"; };
 		FBD161E32B9BC85300420767 /* Game-Architecture-Assignment-3-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Game-Architecture-Assignment-3-Bridging-Header.h"; sourceTree = "<group>"; };
+		FBD161E42B9BCE6D00420767 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,7 +252,8 @@
 				FBD161DC2B9BC7EB00420767 /* Lab10.swift */,
 				FBD1607C2B9BC4F000420767 /* AppDelegate.swift */,
 				FBD1607E2B9BC4F000420767 /* art.scnassets */,
-				FBD160802B9BC4F000420767 /* GameViewController.swift */,
+				FBD160802B9BC4F000420767 /* GameViewControllerShip.swift */,
+				FBD161E42B9BCE6D00420767 /* GameViewController.swift */,
 				FBD160822B9BC4F000420767 /* Main.storyboard */,
 				FBD160852B9BC4F100420767 /* Assets.xcassets */,
 				FBD160872B9BC4F100420767 /* LaunchScreen.storyboard */,
@@ -585,7 +588,7 @@
 				FBD161D42B9BC7D500420767 /* b2PolygonShape.cpp in Sources */,
 				FBD161C32B9BC7D500420767 /* b2RopeJoint.cpp in Sources */,
 				FBD161B32B9BC7D500420767 /* b2ContactSolver.cpp in Sources */,
-				FBD160812B9BC4F000420767 /* GameViewController.swift in Sources */,
+				FBD160812B9BC4F000420767 /* GameViewControllerShip.swift in Sources */,
 				FBD161B42B9BC7D500420767 /* b2CircleContact.cpp in Sources */,
 				FBD161B02B9BC7D500420767 /* b2ChainAndCircleContact.cpp in Sources */,
 				FBD161C62B9BC7D500420767 /* b2Rope.cpp in Sources */,
@@ -603,6 +606,7 @@
 				FBD161BB2B9BC7D500420767 /* b2DistanceJoint.cpp in Sources */,
 				FBD161D32B9BC7D500420767 /* b2CircleShape.cpp in Sources */,
 				FBD161CF2B9BC7D500420767 /* b2CollidePolygon.cpp in Sources */,
+				FBD161E52B9BCE6D00420767 /* GameViewController.swift in Sources */,
 				FBD161B52B9BC7D500420767 /* b2EdgeAndCircleContact.cpp in Sources */,
 				FBD161CD2B9BC7D500420767 /* b2Distance.cpp in Sources */,
 				FBD161AB2B9BC7D500420767 /* b2Body.cpp in Sources */,
