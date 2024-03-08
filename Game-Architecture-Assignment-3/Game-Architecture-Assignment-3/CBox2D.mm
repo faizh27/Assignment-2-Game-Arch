@@ -96,6 +96,7 @@ public:
 
 @implementation CBox2D
 
+// initializing, adding the ball and brick objects here - Jun
 - (instancetype)init
 {
     
@@ -257,7 +258,8 @@ public:
     // Set up the body definition and create the body from it
     b2BodyDef bodyDef;
     b2Body *theObject;
-    bodyDef.type = b2_dynamicBody;
+    //bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2_staticBody; // change added object to a static body - Jun https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_dynamics.html
     bodyDef.position.Set(newObj->loc.x, newObj->loc.y);
     theObject = world->CreateBody(&bodyDef);
     if (!theObject) return;
