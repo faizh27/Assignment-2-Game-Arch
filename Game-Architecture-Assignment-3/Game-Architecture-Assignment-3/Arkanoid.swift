@@ -19,6 +19,13 @@ class Arkanoid: SCNScene {
     
     private var box2D: CBox2D!                      // Points to Objective-C++ wrapper for C++ Box2D library
     
+    let PADDLE_WIDTH: Float = 25
+    let PADDLE_HEIGHT: Float = 5
+    let PADDLE_LENGTH: Float = 1
+    let BALL_RADIUS: Float = 3
+    
+    var isGameStarted: Bool = false
+    
     // Catch if initializer in init() fails
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -34,7 +41,7 @@ class Arkanoid: SCNScene {
         setupCamera()
         
         // Add the ball and the brick
-        addBall()
+        addPaddleAndBall()
         addBrick()
         
         // Initialize the Box2D object
@@ -74,14 +81,20 @@ class Arkanoid: SCNScene {
     }
     
     
-    func addBall() {
+    func addPaddleAndBall() {
+        // Create the paddle geometry
+        let paddle = SCNNode(geometry: SCNBox(width: CGFloat(PADDLE_WIDTH), height: CGFloat(PADDLE_HEIGHT), length: CGFloat(PADDLE_LENGTH), chamferRadius: 0))
+        paddle.name = "Paddle"
+        paddle.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
+        paddle.position = SCNVector3(0, 0, 0) // Position the paddle as per your requirements
+        rootNode.addChildNode(paddle)
         
-        let theBall = SCNNode(geometry: SCNSphere(radius: CGFloat(BALL_RADIUS)))
-        theBall.name = "Ball"
-        theBall.geometry?.firstMaterial?.diffuse.contents = UIColor.green
-        theBall.position = SCNVector3(Int(BALL_POS_X), Int(BALL_POS_Y), 0)
-        rootNode.addChildNode(theBall)
-        
+        // Create the ball geometry
+        let ball = SCNNode(geometry: SCNSphere(radius: CGFloat(BALL_RADIUS)))
+        ball.name = "Ball"
+        ball.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+        ball.position = SCNVector3(0, PADDLE_HEIGHT + BALL_RADIUS + 20, 0) // Position the ball slightly above the paddle
+        paddle.addChildNode(ball) // Add the ball as a child of the paddle
     }
     
     
@@ -89,7 +102,7 @@ class Arkanoid: SCNScene {
     @MainActor
     @objc
     func gameLoop(displaylink: CADisplayLink) {
-        
+        	
         if (lastTime != CFTimeInterval(floatLiteral: 0)) {  // if it's the first frame, just update lastTime
             let elapsedTime = displaylink.targetTimestamp - lastTime    // calculate elapsed time
             updateGameObjects(elapsedTime: elapsedTime) // update all the game objects
