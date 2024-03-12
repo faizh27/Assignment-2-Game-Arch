@@ -15,7 +15,7 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         // create a new scene
-        let scene = Box2DDemo()
+        let scene = Arkanoid()
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView

@@ -11,7 +11,7 @@ import SceneKit
 
 import QuartzCore
 
-class Box2DDemo: SCNScene {
+class Arkanoid: SCNScene {
     
     var cameraNode = SCNNode()                      // Initialize camera node
     

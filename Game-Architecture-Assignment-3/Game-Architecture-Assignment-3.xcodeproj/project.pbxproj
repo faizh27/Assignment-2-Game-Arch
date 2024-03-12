@@ -63,7 +63,7 @@
 		FBD161D72B9BC7D500420767 /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBD161A92B9BC7D500420767 /* b2CollideEdge.cpp */; };
 		FBD161D82B9BC7D500420767 /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBD161AA2B9BC7D500420767 /* b2Collision.cpp */; };
 		FBD161DE2B9BC7EB00420767 /* CBox2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = FBD161DB2B9BC7EB00420767 /* CBox2D.mm */; };
-		FBD161DF2B9BC7EB00420767 /* Lab10.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD161DC2B9BC7EB00420767 /* Lab10.swift */; };
+		FBD161DF2B9BC7EB00420767 /* Arkanoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD161DC2B9BC7EB00420767 /* Arkanoid.swift */; };
 		FBD161E52B9BCE6D00420767 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD161E42B9BCE6D00420767 /* GameViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -192,7 +192,7 @@
 		FBD161AA2B9BC7D500420767 /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
 		FBD161DA2B9BC7EB00420767 /* CBox2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBox2D.h; sourceTree = "<group>"; };
 		FBD161DB2B9BC7EB00420767 /* CBox2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CBox2D.mm; sourceTree = "<group>"; };
-		FBD161DC2B9BC7EB00420767 /* Lab10.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lab10.swift; sourceTree = "<group>"; };
+		FBD161DC2B9BC7EB00420767 /* Arkanoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arkanoid.swift; sourceTree = "<group>"; };
 		FBD161E32B9BC85300420767 /* Game-Architecture-Assignment-3-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Game-Architecture-Assignment-3-Bridging-Header.h"; sourceTree = "<group>"; };
 		FBD161E42B9BCE6D00420767 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -249,7 +249,7 @@
 				FBD161DA2B9BC7EB00420767 /* CBox2D.h */,
 				FBD161DB2B9BC7EB00420767 /* CBox2D.mm */,
 				FBD161E32B9BC85300420767 /* Game-Architecture-Assignment-3-Bridging-Header.h */,
-				FBD161DC2B9BC7EB00420767 /* Lab10.swift */,
+				FBD161DC2B9BC7EB00420767 /* Arkanoid.swift */,
 				FBD1607C2B9BC4F000420767 /* AppDelegate.swift */,
 				FBD1607E2B9BC4F000420767 /* art.scnassets */,
 				FBD160802B9BC4F000420767 /* GameViewControllerShip.swift */,
@@ -597,7 +597,7 @@
 				FBD1607D2B9BC4F000420767 /* AppDelegate.swift in Sources */,
 				FBD161BD2B9BC7D500420767 /* b2MotorJoint.cpp in Sources */,
 				FBD161D62B9BC7D500420767 /* b2BroadPhase.cpp in Sources */,
-				FBD161DF2B9BC7EB00420767 /* Lab10.swift in Sources */,
+				FBD161DF2B9BC7EB00420767 /* Arkanoid.swift in Sources */,
 				FBD161D22B9BC7D500420767 /* b2EdgeShape.cpp in Sources */,
 				FBD161B62B9BC7D500420767 /* b2Contact.cpp in Sources */,
 				FBD161CE2B9BC7D500420767 /* b2CollideCircle.cpp in Sources */,
