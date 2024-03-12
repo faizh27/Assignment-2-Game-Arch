@@ -53,9 +53,10 @@ class Arkanoid: SCNScene {
     func setupCamera() {
         
         let camera = SCNCamera() // Create Camera object
+        camera.zFar = 1000
         cameraNode.camera = camera // Give the cameraNode a camera
         // Since this is 2D, just look down the z-axis
-        cameraNode.position = SCNVector3(0, 50, 100)
+        cameraNode.position = SCNVector3(0, 50, 200)
         cameraNode.eulerAngles = SCNVector3(0, 0, 0)
         rootNode.addChildNode(cameraNode) // Add the cameraNode to the scene
         
